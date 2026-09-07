@@ -1,0 +1,117 @@
+{
+  "_meta": {
+    "note": "Test fixtures, not demo dressing. Each profile exercises a distinct tax situation. Salary breakups were added because a gross package alone cannot produce an HRA exemption.",
+    "assumptions": [
+      "Basic salary taken as 50% of the gross package.",
+      "HRA component taken as 50% of basic.",
+      "Bengaluru and Pune treated as non-metro (40%); Mumbai as metro (50%)."
+    ]
+  },
+  "profiles": [
+    {
+      "id": "PRIYA-001",
+      "name": "Priya",
+      "age": 24,
+      "occupation": "salaried",
+      "jobTitle": "Software Engineer",
+      "city": "Bengaluru",
+      "isMetro": false,
+      "exercises": "Form 16, employer TDS, regime comparison, HRA least-of-three, section 87A",
+      "bank": {
+        "name": "HDFC Bank",
+        "maskedNumber": "XXXXXX1234",
+        "balance": 240000,
+        "type": "personal"
+      },
+      "income": {
+        "grossAnnual": 1200000,
+        "basicAnnual": 600000,
+        "hraReceivedAnnual": 300000
+      },
+      "rentMonthly": 25000,
+      "deductions": {
+        "80C": 50000,
+        "80D": 0,
+        "80CCD1B": 0,
+        "24b": 0,
+        "80TTA": 0
+      }
+    },
+    {
+      "id": "ARJUN-002",
+      "name": "Arjun",
+      "age": 28,
+      "occupation": "business",
+      "jobTitle": "Owner, digital services business",
+      "city": "Mumbai",
+      "isMetro": true,
+      "exercises": "GST registration and input credit, advance tax, presumptive taxation under 44AD, profit and loss",
+      "bank": {
+        "name": "ICICI Bank",
+        "maskedNumber": "XXXXXX5678",
+        "balance": 450000,
+        "type": "personal"
+      },
+      "businessBank": {
+        "name": "ICICI Current Account",
+        "maskedNumber": "XXXXXX8899",
+        "balance": 620000,
+        "type": "business"
+      },
+      "income": {
+        "grossAnnual": 1500000,
+        "turnoverAnnual": 2400000,
+        "businessExpensesAnnual": 900000,
+        "digitalReceiptShare": 0.95,
+        "gstOnExpensesPaid": 92000
+      },
+      "rentMonthly": 40000,
+      "deductions": {
+        "80C": 100000,
+        "80D": 25000,
+        "80CCD1B": 0,
+        "24b": 0,
+        "80TTA": 0
+      }
+    },
+    {
+      "id": "ROHAN-003",
+      "name": "Rohan",
+      "age": 26,
+      "occupation": "profession",
+      "jobTitle": "Freelance Designer",
+      "city": "Pune",
+      "isMetro": false,
+      "exercises": "194J TDS deducted by clients, GST threshold proximity, presumptive taxation under 44ADA",
+      "bank": {
+        "name": "Axis Bank",
+        "maskedNumber": "XXXXXX9012",
+        "balance": 180000,
+        "type": "personal"
+      },
+      "businessBank": {
+        "name": "Axis Current Account",
+        "maskedNumber": "XXXXXX3456",
+        "balance": 320000,
+        "type": "business"
+      },
+      "income": {
+        "grossAnnual": 1400000,
+        "grossReceiptsAnnual": 1800000,
+        "businessExpensesAnnual": 400000,
+        "exportReceipts": 1000000,
+        "domesticReceipts": 800000,
+        "tds194JDeducted": 80000,
+        "gstOnExpensesPaid": 41000
+      },
+      "rentMonthly": 18000,
+      "deductions": {
+        "80C": 60000,
+        "80D": 0,
+        "80CCD1B": 0,
+        "24b": 0,
+        "80TTA": 0
+      }
+    }
+  ]
+}

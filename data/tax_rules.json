@@ -1,0 +1,329 @@
+{
+  "_meta": {
+    "financialYear": "2025-26",
+    "assessmentYear": "2026-27",
+    "governingAct": "Income-tax Act, 1961",
+    "actNote": "The Income-tax Act, 2025 comes into force on 1 April 2026 and governs FY 2026-27 onward. This project targets FY 2025-26, which remains under the 1961 Act. Section names below (80C, 87A, 44AD) are the 1961 Act numbering.",
+    "verification": {
+      "status": "UNVERIFIED",
+      "verifiedBy": "",
+      "verifiedOn": "",
+      "howToVerify": "Run: npm run checklist. Check every figure against the official calculator, then fill verifiedBy and verifiedOn and set status to VERIFIED."
+    }
+  },
+  "regimes": {
+    "new": {
+      "label": "New Regime",
+      "isDefault": true,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+      "standardDeduction": 75000,
+      "standardDeductionAppliesTo": [
+        "salaried"
+      ],
+      "slabs": [
+        {
+          "from": 0,
+          "to": 400000,
+          "rate": 0.0
+        },
+        {
+          "from": 400000,
+          "to": 800000,
+          "rate": 0.05
+        },
+        {
+          "from": 800000,
+          "to": 1200000,
+          "rate": 0.1
+        },
+        {
+          "from": 1200000,
+          "to": 1600000,
+          "rate": 0.15
+        },
+        {
+          "from": 1600000,
+          "to": 2000000,
+          "rate": 0.2
+        },
+        {
+          "from": 2000000,
+          "to": 2400000,
+          "rate": 0.25
+        },
+        {
+          "from": 2400000,
+          "to": null,
+          "rate": 0.3
+        }
+      ],
+      "rebate87A": {
+        "thresholdTaxableIncome": 1200000,
+        "maxRebate": 60000
+      },
+      "allowedDeductions": [],
+      "hraAllowed": false
+    },
+    "old": {
+      "label": "Old Regime",
+      "isDefault": false,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+      "standardDeduction": 50000,
+      "standardDeductionAppliesTo": [
+        "salaried"
+      ],
+      "slabs": [
+        {
+          "from": 0,
+          "to": 250000,
+          "rate": 0.0
+        },
+        {
+          "from": 250000,
+          "to": 500000,
+          "rate": 0.05
+        },
+        {
+          "from": 500000,
+          "to": 1000000,
+          "rate": 0.2
+        },
+        {
+          "from": 1000000,
+          "to": null,
+          "rate": 0.3
+        }
+      ],
+      "rebate87A": {
+        "thresholdTaxableIncome": 500000,
+        "maxRebate": 12500
+      },
+      "allowedDeductions": [
+        "80C",
+        "80D",
+        "80D_parents_senior",
+        "80CCD1B",
+        "24b",
+        "80E",
+        "80TTA"
+      ],
+      "hraAllowed": true
+    }
+  },
+  "cess": {
+    "label": "Health and Education Cess",
+    "rate": 0.04,
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+  },
+  "deductions": {
+    "80C": {
+      "label": "80C investments (ELSS, PPF, EPF, life insurance, tuition fees, home loan principal)",
+      "cap": 150000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "80D": {
+      "label": "80D health insurance for self and family",
+      "cap": 25000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "80D_parents_senior": {
+      "label": "80D health insurance for senior citizen parents",
+      "cap": 50000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "80CCD1B": {
+      "label": "80CCD(1B) additional NPS contribution",
+      "cap": 50000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "24b": {
+      "label": "Section 24(b) home loan interest on a self-occupied property",
+      "cap": 200000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "80E": {
+      "label": "80E education loan interest",
+      "cap": null,
+      "note": "No monetary cap. Claimable for up to 8 years.",
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    },
+    "80TTA": {
+      "label": "80TTA savings account interest",
+      "cap": 10000,
+      "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED."
+    }
+  },
+  "hra": {
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+    "metroRate": 0.5,
+    "nonMetroRate": 0.4,
+    "rentOffsetRate": 0.1,
+    "metroCities": [
+      "Delhi",
+      "Mumbai",
+      "Kolkata",
+      "Chennai"
+    ],
+    "rule": "Exemption is the least of: actual HRA received; 50% of basic salary in a metro or 40% elsewhere; rent paid minus 10% of basic salary.",
+    "_openQuestion": "The four metro cities above are the conventional list. Confirm before submission."
+  },
+  "presumptive": {
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+    "_note": "Presumptive taxation lets a small business or professional skip detailed books. Profit is deemed to be a fixed share of turnover.",
+    "44AD": {
+      "label": "Section 44AD, presumptive scheme for eligible businesses",
+      "appliesTo": "business",
+      "deemedRateCash": 0.08,
+      "deemedRateDigital": 0.06,
+      "turnoverCeiling": 20000000,
+      "turnoverCeilingIfCashUnderFivePercent": 30000000,
+      "lockInYears": 5,
+      "notes": [
+        "The 6% rate applies to receipts through banking or electronic channels; 8% otherwise.",
+        "Business expenses cannot be claimed separately once this scheme is used.",
+        "Opting out locks the taxpayer out of the scheme for the following 5 tax years."
+      ]
+    },
+    "44ADA": {
+      "label": "Section 44ADA, presumptive scheme for specified professionals",
+      "appliesTo": "profession",
+      "deemedRate": 0.5,
+      "receiptsCeiling": 5000000,
+      "receiptsCeilingIfCashUnderFivePercent": 7500000,
+      "notes": [
+        "Applies to specified professions such as design, legal, medical, engineering and accountancy.",
+        "Profit is deemed to be 50% of gross receipts. Expenses cannot be claimed separately."
+      ]
+    }
+  },
+  "gst": {
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+    "serviceRegistrationThreshold": 2000000,
+    "goodsRegistrationThreshold": 4000000,
+    "standardServiceRate": 0.18,
+    "exportsZeroRated": true,
+    "inputTaxCreditAllowed": true,
+    "notes": [
+      "A service provider must register once annual turnover crosses the threshold.",
+      "GST paid on business expenses can be set off against GST charged to customers.",
+      "Exports are zero-rated: no GST is charged, and input credit may still be claimed."
+    ]
+  },
+  "tds": {
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+    "194J": {
+      "label": "TDS on professional or technical fees",
+      "rate": 0.1,
+      "thresholdAnnual": 30000
+    }
+  },
+  "advanceTax": {
+    "_source": "Transcribed from official rate tables for FY 2025-26. NOT YET VERIFIED.",
+    "minimumLiability": 10000,
+    "schedule": [
+      {
+        "dueDate": "15 Jun",
+        "cumulativePercent": 0.15
+      },
+      {
+        "dueDate": "15 Sep",
+        "cumulativePercent": 0.45
+      },
+      {
+        "dueDate": "15 Dec",
+        "cumulativePercent": 0.75
+      },
+      {
+        "dueDate": "15 Mar",
+        "cumulativePercent": 1.0
+      }
+    ],
+    "presumptiveSchedule": [
+      {
+        "dueDate": "15 Mar",
+        "cumulativePercent": 1.0
+      }
+    ],
+    "notes": [
+      "A taxpayer under a presumptive scheme pays the whole amount in a single instalment by 15 March."
+    ]
+  },
+  "calendar": [
+    {
+      "id": "itr_due",
+      "label": "Income tax return filing deadline",
+      "date": "31 Jul",
+      "appliesTo": [
+        "salaried",
+        "business",
+        "profession"
+      ]
+    },
+    {
+      "id": "form16",
+      "label": "Employer must issue Form 16",
+      "date": "15 Jun",
+      "appliesTo": [
+        "salaried"
+      ]
+    },
+    {
+      "id": "adv_q1",
+      "label": "Advance tax instalment 1 (15%)",
+      "date": "15 Jun",
+      "appliesTo": [
+        "business",
+        "profession"
+      ]
+    },
+    {
+      "id": "adv_q2",
+      "label": "Advance tax instalment 2 (45%)",
+      "date": "15 Sep",
+      "appliesTo": [
+        "business",
+        "profession"
+      ]
+    },
+    {
+      "id": "adv_q3",
+      "label": "Advance tax instalment 3 (75%)",
+      "date": "15 Dec",
+      "appliesTo": [
+        "business",
+        "profession"
+      ]
+    },
+    {
+      "id": "adv_q4",
+      "label": "Advance tax instalment 4 (100%)",
+      "date": "15 Mar",
+      "appliesTo": [
+        "business",
+        "profession"
+      ]
+    },
+    {
+      "id": "gstr1",
+      "label": "GSTR-1 monthly return",
+      "date": "11th of each month",
+      "appliesTo": [
+        "gst_registered"
+      ]
+    },
+    {
+      "id": "gstr3b",
+      "label": "GSTR-3B monthly return",
+      "date": "20th of each month",
+      "appliesTo": [
+        "gst_registered"
+      ]
+    }
+  ],
+  "_gaps": [
+    "Surcharge on incomes above 50 lakh is NOT implemented. No test fixture reaches that level. Must be added before any real use.",
+    "Marginal relief on surcharge is not implemented, for the same reason.",
+    "Senior and super-senior citizen slab variations under the old regime are not implemented. All fixtures are under 60.",
+    "Capital gains are not implemented."
+  ]
+}

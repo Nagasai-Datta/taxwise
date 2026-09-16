@@ -10,12 +10,30 @@
     "test:watch": "vitest",
     "verify": "tsx scripts/verify.ts",
     "checklist": "tsx scripts/checklist.ts",
-    "layers": "tsx scripts/layers.ts"
+    "layers": "tsx scripts/layers.ts",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:check": "tsx scripts/db-check.ts",
+    "tools": "tsx scripts/tools.ts",
+    "ask": "tsx scripts/ask.ts",
+    "providers": "tsx scripts/providers-check.ts",
+    "corpus:embed": "tsx scripts/corpus.ts",
+    "corpus:check": "tsx scripts/corpus.ts --check",
+    "bench": "tsx scripts/bench.ts"
   },
   "dependencies": {
     "next": "16.3.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "drizzle-orm": "0.45.2",
+    "postgres": "3.4.7",
+    "zod": "3.25.76",
+    "ai": "7.0.93",
+    "@ai-sdk/groq": "4.0.37",
+    "@ai-sdk/google": "4.0.64",
+    "@openrouter/ai-sdk-provider": "3.0.0"
   },
   "devDependencies": {
     "@types/node": "22.19.1",
@@ -26,6 +44,8 @@
     "tailwindcss": "3.4.18",
     "tsx": "4.20.6",
     "typescript": "5.9.3",
-    "vitest": "3.2.4"
+    "vitest": "3.2.4",
+    "drizzle-kit": "0.31.10",
+    "dotenv": "16.4.7"
   }
 }

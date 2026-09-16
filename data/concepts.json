@@ -1,0 +1,825 @@
+{
+  "_meta": {
+    "count": 55,
+    "rule": "No explainer contains a rupee amount, a rate or a threshold. The Tutor is structurally unable to state a figure, so the corpus it quotes from must not contain one either. Where a number is needed, the text names the tool that supplies it."
+  },
+  "concepts": [
+    {
+      "id": "what-is-income-tax",
+      "title": "What income tax is",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "income tax",
+        "what is tax",
+        "why do i pay tax"
+      ],
+      "body": "Income tax is a share of what you earn that goes to the government each year. It pays for roads, schools, hospitals and everything else the state runs. You do not pay it on every rupee you receive: certain amounts are subtracted first, and only what remains is taxed. The share itself is not one flat number either. It rises in steps as your income rises, so someone earning more pays a larger share, not just a larger amount. Everything else in tax is detail hanging off those two ideas: what gets subtracted, and what the steps are.",
+      "relatedTools": [
+        "compute_tax"
+      ]
+    },
+    {
+      "id": "what-is-a-slab",
+      "title": "What a tax slab is",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "slab",
+        "tax slab",
+        "tax bracket",
+        "how are rates applied"
+      ],
+      "body": "A slab is a band of income with its own tax rate. Your income is cut into these bands and each band is taxed at its own rate, then the results are added up. This is the single most misunderstood part of Indian tax. Moving into a higher slab does not mean your whole income is suddenly taxed at the higher rate. Only the portion that falls inside that band is. So earning one rupee more can never leave you worse off. The first band is always taxed at nothing, which is why low incomes pay no tax at all.",
+      "relatedTools": [
+        "compute_tax"
+      ]
+    },
+    {
+      "id": "taxable-income",
+      "title": "Taxable income",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "taxable income",
+        "what is taxed",
+        "gross vs taxable"
+      ],
+      "body": "Taxable income is what is left of your earnings after everything you are allowed to subtract has been taken off. It is not the same as your salary or your turnover. The slab rates are applied to this figure, not to what you actually received, which is why two people with the same salary can owe very different amounts. What you can subtract depends on which regime you choose and on what you have spent or invested during the year.",
+      "relatedTools": [
+        "compute_tax",
+        "get_profile_summary"
+      ]
+    },
+    {
+      "id": "assessment-year",
+      "title": "Financial year and assessment year",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "financial year",
+        "assessment year",
+        "fy",
+        "ay",
+        "which year"
+      ],
+      "body": "The financial year is the twelve months you earn in, running from April to March. The assessment year is the following twelve months, when you actually file a return for those earnings and the tax department assesses them. So income earned in one year is filed in the next. This is why tax forms always mention two years, and why a rule change announced in a budget often applies to the year you are earning in now rather than the one you are filing for.",
+      "relatedTools": []
+    },
+    {
+      "id": "cess",
+      "title": "Health and education cess",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "cess",
+        "education cess",
+        "extra charge on tax"
+      ],
+      "body": "Cess is a small additional charge added on top of the tax you already owe, earmarked for health and education spending. It is calculated on the tax figure, not on your income, and it is applied at the very end, after any rebate has been taken off. This ordering matters: if a rebate wipes your tax out entirely, there is nothing left for cess to be charged on, so you pay nothing rather than a small residue.",
+      "relatedTools": [
+        "compute_tax"
+      ]
+    },
+    {
+      "id": "rebate-87a",
+      "title": "The rebate that can make your tax zero",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "87a",
+        "rebate",
+        "zero tax",
+        "no tax below"
+      ],
+      "body": "There is a relief in the law that removes your tax entirely if your taxable income falls below a threshold. It works as a rebate rather than an exemption: the tax is calculated normally first, then the rebate cancels it. The important consequence is that it is a cliff, not a slope. Cross the threshold by a small amount and the rebate stops applying, so tax appears suddenly rather than creeping in. There is a marginal relief provision that softens this near the edge. The Computation agent can tell you where you sit relative to the threshold.",
+      "relatedTools": [
+        "compute_tax",
+        "compare_regimes"
+      ]
+    },
+    {
+      "id": "filing-a-return",
+      "title": "What filing a return means",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "itr",
+        "filing",
+        "return",
+        "how to file"
+      ],
+      "body": "Filing a return means telling the tax department what you earned in a financial year and what tax has already been paid on your behalf. It does not usually mean paying a large sum: for most salaried people, tax has been deducted throughout the year and filing simply reconciles it. The outcome is either a small balance to pay or a refund. There is a deadline each year, and the Computation agent can tell you which deadlines apply to your situation.",
+      "relatedTools": [
+        "get_deadlines"
+      ]
+    },
+    {
+      "id": "refund",
+      "title": "Tax refunds",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "refund",
+        "money back",
+        "excess tax"
+      ],
+      "body": "A refund arises when more tax was collected from you during the year than you actually owed. That happens often, because employers and clients deduct tax before knowing about the deductions you will eventually claim. When you file your return and claim them, the excess comes back. Refunds are not a bonus or a reward: they are your own money being returned, which also means a very large refund is a sign that too much was being withheld all year.",
+      "relatedTools": []
+    },
+    {
+      "id": "pan",
+      "title": "PAN and why every tax record needs one",
+      "category": "tax-basics",
+      "level": "beginner",
+      "aliases": [
+        "pan",
+        "permanent account number"
+      ],
+      "body": "A PAN is the identifier that ties every tax record to one person. Employers use it when depositing tax deducted from your salary, banks use it for interest reporting, and clients use it when deducting tax from professional fees. Because everything is keyed to it, the tax department can show you a consolidated statement of the tax already paid in your name. If a payer uses the wrong PAN, that tax will not appear against you, which is worth checking before you file.",
+      "relatedTools": []
+    },
+    {
+      "id": "form-26as",
+      "title": "The statement of tax already paid for you",
+      "category": "tax-basics",
+      "level": "intermediate",
+      "aliases": [
+        "26as",
+        "ais",
+        "tax credit statement",
+        "tax already paid"
+      ],
+      "body": "The tax department maintains a statement showing all the tax that has been deposited against your PAN by employers, clients and banks during the year. It is the authoritative record of what has already been paid on your behalf. Before filing, it is worth comparing it against your own documents. If a client deducted tax but never deposited it, it will be missing here, and you cannot claim credit for tax the department has no record of receiving.",
+      "relatedTools": []
+    },
+    {
+      "id": "two-regimes",
+      "title": "Why there are two tax regimes",
+      "category": "regimes",
+      "level": "beginner",
+      "aliases": [
+        "regime",
+        "old regime",
+        "new regime",
+        "which regime",
+        "two systems"
+      ],
+      "body": "India runs two parallel sets of tax rules and you choose one each year. The newer one has gentler rates spread across more bands but allows almost nothing to be subtracted. The older one has steeper rates but permits a long list of deductions for rent, investments, insurance and loans. Neither is better in general. Which one costs you less depends entirely on how much you actually claim under the older one. If you claim little, the newer rates win; if you claim a lot, the older deductions can outweigh them.",
+      "relatedTools": [
+        "compare_regimes"
+      ]
+    },
+    {
+      "id": "choosing-a-regime",
+      "title": "How to choose between the regimes",
+      "category": "regimes",
+      "level": "beginner",
+      "aliases": [
+        "which regime should i pick",
+        "choose regime",
+        "switch regime"
+      ],
+      "body": "The only reliable way to choose is to compute the tax both ways and compare. Rules of thumb based on salary alone are unreliable because the answer turns on your deductions, not your income. Rent is often the deciding factor, since the rent exemption is only available under the older regime and can be large. When the two come out close, the newer regime is usually preferable anyway, because the older one requires you to keep proof of everything you claimed. Ask the Computation agent to run both for your own numbers.",
+      "relatedTools": [
+        "compare_regimes",
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "default-regime",
+      "title": "Which regime applies if you do nothing",
+      "category": "regimes",
+      "level": "beginner",
+      "aliases": [
+        "default regime",
+        "automatic regime",
+        "if i do not choose"
+      ],
+      "body": "One of the two regimes is the default. If you make no choice, that is the one applied to you. This matters because someone paying substantial rent and holding investments could be worse off by simply not choosing. Salaried people are normally asked by their employer at the start of the year, which determines how much tax is deducted from each payslip, though the final choice is made when the return is filed.",
+      "relatedTools": [
+        "compare_regimes"
+      ]
+    },
+    {
+      "id": "standard-deduction",
+      "title": "The standard deduction",
+      "category": "regimes",
+      "level": "beginner",
+      "aliases": [
+        "standard deduction",
+        "flat deduction",
+        "automatic deduction"
+      ],
+      "body": "The standard deduction is a fixed amount subtracted from salary income with no proof required and no conditions attached. It exists to acknowledge that earning a salary carries costs without asking anyone to itemise them. It applies to salary specifically, so business and professional income does not receive it. Both regimes offer it, at different amounts. The Computation agent can tell you the amount that applies to you.",
+      "relatedTools": [
+        "compute_tax"
+      ]
+    },
+    {
+      "id": "marginal-relief",
+      "title": "Marginal relief near a threshold",
+      "category": "regimes",
+      "level": "intermediate",
+      "aliases": [
+        "marginal relief",
+        "just above the limit",
+        "cliff"
+      ],
+      "body": "Some tax thresholds create a cliff: earn a little more and a large amount of tax appears at once. Marginal relief exists to soften that. It limits the extra tax so that it can never exceed the extra income that caused it. Without it, a small raise could genuinely leave someone worse off, which the law is designed to avoid. It applies near the rebate threshold and near the surcharge thresholds.",
+      "relatedTools": []
+    },
+    {
+      "id": "surcharge",
+      "title": "Surcharge on high incomes",
+      "category": "regimes",
+      "level": "intermediate",
+      "aliases": [
+        "surcharge",
+        "high income tax",
+        "extra rate"
+      ],
+      "body": "Above certain income levels an additional percentage is added on top of the tax itself, not on income. It rises in steps as income rises further. It affects a small minority of taxpayers and none of the profiles in this system reach the level at which it starts. It is mentioned here so that you know it exists rather than because it is likely to affect you.",
+      "relatedTools": []
+    },
+    {
+      "id": "what-is-a-deduction",
+      "title": "What a deduction is",
+      "category": "deductions",
+      "level": "beginner",
+      "aliases": [
+        "deduction",
+        "what is a deduction",
+        "reduce taxable income"
+      ],
+      "body": "A deduction is an amount you are allowed to subtract from your income before tax is worked out. Spend or invest in a way the law encourages and part of that spending reduces the income you are taxed on. A deduction is not a refund and it is not a discount on the tax itself. It reduces the base, so what it actually saves you depends on which slab that portion of income would have fallen in. Most deductions have a ceiling, and anything above the ceiling simply does not count.",
+      "relatedTools": [
+        "optimize_deductions",
+        "list_deduction_sections"
+      ]
+    },
+    {
+      "id": "deduction-vs-exemption",
+      "title": "Deduction, exemption and rebate",
+      "category": "deductions",
+      "level": "intermediate",
+      "aliases": [
+        "difference between deduction and exemption",
+        "rebate vs deduction"
+      ],
+      "body": "These three words are used loosely in conversation but mean different things. An exemption means certain income is not treated as income at all. A deduction means income counts but an amount is subtracted before tax is applied. A rebate means the tax is calculated in full and then reduced or cancelled afterwards. The order matters: exemptions act first, deductions second, and rebates last, after the tax figure already exists.",
+      "relatedTools": []
+    },
+    {
+      "id": "section-80c",
+      "title": "Section 80C",
+      "category": "deductions",
+      "level": "beginner",
+      "aliases": [
+        "80c",
+        "eighty c",
+        "investment deduction",
+        "elss ppf"
+      ],
+      "body": "Section 80C is the best known deduction and covers a broad list: provident fund contributions, certain mutual funds with a lock-in, life insurance premiums, children's tuition fees, and the principal portion of a home loan repayment. There is a single combined ceiling across all of them, so filling one leaves less room for the others. Many salaried people are partly there already without realising, because provident fund contributions deducted from their salary count. The Computation agent can tell you how much room you have left.",
+      "relatedTools": [
+        "optimize_deductions",
+        "what_if_deduction"
+      ]
+    },
+    {
+      "id": "section-80d",
+      "title": "Section 80D, health insurance",
+      "category": "deductions",
+      "level": "beginner",
+      "aliases": [
+        "80d",
+        "health insurance deduction",
+        "mediclaim"
+      ],
+      "body": "Section 80D covers premiums paid for health insurance. There is a ceiling for cover on yourself and your immediate family, and a separate additional ceiling for premiums paid on behalf of your parents, which is higher when they are senior citizens. Preventive health check-ups can be included within the limit. The premium must actually be paid by you, and payment in cash is generally not accepted for the main premium.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "section-80ccd",
+      "title": "Additional pension contribution",
+      "category": "deductions",
+      "level": "intermediate",
+      "aliases": [
+        "80ccd",
+        "nps",
+        "pension deduction"
+      ],
+      "body": "There is a deduction for contributions to the national pension system that sits over and above the main investment ceiling. That is what makes it useful: it gives room to someone who has already exhausted the broader limit. The money is locked until retirement and the eventual payout is partly taxable, so it suits long-horizon saving rather than a short-term tax adjustment.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "home-loan-interest",
+      "title": "Home loan interest",
+      "category": "deductions",
+      "level": "intermediate",
+      "aliases": [
+        "24b",
+        "home loan",
+        "housing loan interest",
+        "emi deduction"
+      ],
+      "body": "A home loan repayment has two parts and they are treated differently. The principal portion falls within the general investment ceiling. The interest portion has its own separate deduction with its own ceiling for a property you live in. Because early EMIs are mostly interest, this deduction is at its largest in the first years of a loan, which is often when the borrower most needs it.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "education-loan-interest",
+      "title": "Education loan interest",
+      "category": "deductions",
+      "level": "intermediate",
+      "aliases": [
+        "80e",
+        "education loan",
+        "student loan"
+      ],
+      "body": "Interest paid on a loan taken for higher education is deductible with no monetary ceiling at all, which is unusual. The relief is available for a limited number of years starting from when repayment begins. Only the interest qualifies, not the principal. The loan must be from a bank or approved institution rather than from family.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "savings-interest-deduction",
+      "title": "Interest on a savings account",
+      "category": "deductions",
+      "level": "beginner",
+      "aliases": [
+        "80tta",
+        "savings interest",
+        "bank interest deduction"
+      ],
+      "body": "Interest credited to an ordinary savings account is taxable income, but a modest amount of it can be deducted, which means most people with a normal balance pay nothing on it. Fixed deposit interest is treated differently and does not qualify. Banks report interest against your PAN, so it appears in the tax department's records whether or not you remember it.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "proof-for-deductions",
+      "title": "Keeping proof",
+      "category": "deductions",
+      "level": "beginner",
+      "aliases": [
+        "proof",
+        "documents",
+        "receipts for deduction"
+      ],
+      "body": "Claiming a deduction is a statement you are making, and you may be asked to support it. Premium receipts, investment statements, rent receipts and loan certificates should be kept. Employers usually ask for them mid-year so they can adjust the tax deducted from your salary, but the obligation to be able to produce them rests with you and lasts beyond that. This paperwork is one real cost of the older regime, and it is worth weighing when the two regimes come out close.",
+      "relatedTools": []
+    },
+    {
+      "id": "what-is-tds",
+      "title": "Tax deducted at source",
+      "category": "salary",
+      "level": "beginner",
+      "aliases": [
+        "tds",
+        "tax deducted at source",
+        "why is money cut"
+      ],
+      "body": "Tax deducted at source means whoever pays you removes a portion and sends it to the government before the money reaches you. Employers do it on salary, clients do it on professional fees, and banks do it on some interest. It is not an extra tax. It is the same tax collected earlier, and every rupee deducted is credited to you when you file. Its purpose is to make collection steady and hard to avoid rather than to increase what you owe.",
+      "relatedTools": [
+        "compute_194j_tds"
+      ]
+    },
+    {
+      "id": "form-16",
+      "title": "Form 16",
+      "category": "salary",
+      "level": "beginner",
+      "aliases": [
+        "form 16",
+        "salary certificate"
+      ],
+      "body": "Form 16 is the certificate your employer gives you after the financial year ends. It states what they paid you, what they deducted, and the tax they deposited on your behalf. It is the main document a salaried person needs in order to file. It comes in two parts: a summary of tax deposited, and a detailed breakdown of your salary and the deductions your employer already took into account.",
+      "relatedTools": [
+        "get_deadlines"
+      ]
+    },
+    {
+      "id": "salary-structure",
+      "title": "How a salary is broken up",
+      "category": "salary",
+      "level": "beginner",
+      "aliases": [
+        "salary structure",
+        "basic",
+        "allowance",
+        "ctc"
+      ],
+      "body": "A salary is rarely a single number. It is split into a basic component and a series of allowances, and the split matters because several tax rules are calculated as a percentage of basic rather than of the whole. The total cost to the company also includes contributions your employer makes on your behalf, which is why the advertised figure is usually larger than anything that reaches your account.",
+      "relatedTools": [
+        "get_profile_summary"
+      ]
+    },
+    {
+      "id": "hra",
+      "title": "House rent allowance",
+      "category": "salary",
+      "level": "beginner",
+      "aliases": [
+        "hra",
+        "rent allowance",
+        "rent exemption",
+        "house rent"
+      ],
+      "body": "If your salary includes a house rent allowance and you actually pay rent, part of that allowance escapes tax. The exempt amount is the least of three quantities: the allowance you actually received, a percentage of your basic salary that is higher in the four largest metropolitan cities than elsewhere, and your rent minus a tenth of your basic salary. Because the rule takes the smallest of the three, paying more rent does not always increase the exemption. It is available under the older regime only. The Computation agent can work out all three figures for you.",
+      "relatedTools": [
+        "compute_hra_exemption"
+      ]
+    },
+    {
+      "id": "rent-without-hra",
+      "title": "Paying rent without a rent allowance",
+      "category": "salary",
+      "level": "intermediate",
+      "aliases": [
+        "80gg",
+        "rent no hra",
+        "self employed rent"
+      ],
+      "body": "The main rent relief requires your salary to actually contain a rent allowance. Someone who pays rent but receives no such allowance, including most self-employed people, cannot use it. A separate and considerably smaller provision exists for that situation, with its own conditions, including that neither you nor your family owns a home in the same city. It is not implemented in this system, which is worth knowing if you pay rent and see no relief for it.",
+      "relatedTools": []
+    },
+    {
+      "id": "employee-vs-freelancer",
+      "title": "Being employed against being self-employed",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "freelancer",
+        "self employed",
+        "difference employee freelancer"
+      ],
+      "body": "An employee receives a salary with tax deducted every month and gets a certificate at the end of the year. Someone self-employed receives fees with tax sometimes deducted by the client, must estimate and pay their own tax through the year, and can subtract genuine business expenses that an employee cannot. The self-employed also lose the standard deduction, which is a salary-only relief. Neither arrangement is simply better; they trade convenience against control.",
+      "relatedTools": [
+        "get_profile_summary"
+      ]
+    },
+    {
+      "id": "business-expenses",
+      "title": "Business expenses",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "business expense",
+        "claim expenses",
+        "deduct laptop"
+      ],
+      "body": "If you earn from a business or profession, the cost of earning it is subtracted before tax. Software subscriptions, a coworking desk, professional internet, equipment and travel for work all qualify when they are genuinely for the business. The test is whether the expense was incurred to earn the income. Personal spending does not qualify, and mixed items need apportioning. Keeping business and personal money in separate accounts makes this far easier to defend later.",
+      "relatedTools": [
+        "categorize_spending"
+      ]
+    },
+    {
+      "id": "presumptive-taxation",
+      "title": "Presumptive taxation",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "presumptive",
+        "44ad",
+        "44ada",
+        "deemed profit",
+        "no books"
+      ],
+      "body": "Presumptive taxation offers small businesses and professionals a shortcut. Instead of counting every rupee of income and expense and keeping full books, you declare a fixed percentage of your turnover as profit and pay tax on that. The percentage differs for a business and for a profession, and there is a turnover ceiling above which the scheme is unavailable. Whether it helps depends entirely on whether your real profit margin is above or below the assumed percentage. The Computation agent can compute both and compare them.",
+      "relatedTools": [
+        "presumptive_vs_books"
+      ]
+    },
+    {
+      "id": "presumptive-conditions",
+      "title": "The strings attached to presumptive taxation",
+      "category": "freelance",
+      "level": "intermediate",
+      "aliases": [
+        "presumptive conditions",
+        "lock in",
+        "44ad rules"
+      ],
+      "body": "The shortcut is not free. Once you declare profit on a presumptive basis you cannot also claim your actual expenses, since the assumed percentage is deemed to account for them. For businesses there is a lock-in: opting out later bars you from the scheme for several following years. Advance tax also works differently, falling due in a single instalment near the end of the year rather than four across it. These conditions are the reason to think rather than simply take the lower number.",
+      "relatedTools": [
+        "presumptive_vs_books",
+        "compute_advance_tax"
+      ]
+    },
+    {
+      "id": "advance-tax",
+      "title": "Advance tax",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "advance tax",
+        "quarterly tax",
+        "pay tax in instalments"
+      ],
+      "body": "If your tax for the year is expected to exceed a small threshold, you are expected to pay it across the year rather than in one payment at the end. Salaried people usually satisfy this automatically because tax is deducted monthly. Self-employed people generally do not, and must estimate and pay themselves on fixed dates. Missing the dates attracts interest rather than a penalty, but it accumulates. The Computation agent can produce the schedule that applies to you.",
+      "relatedTools": [
+        "compute_advance_tax"
+      ]
+    },
+    {
+      "id": "section-194j",
+      "title": "Tax deducted from professional fees",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "194j",
+        "client deducted tax",
+        "professional fees tds"
+      ],
+      "body": "When a business pays professional or technical fees above a threshold, it must deduct tax before paying and deposit it against your PAN. This is why an invoice is often settled for less than the amount raised. The deducted amount is not lost. It is credit against your final liability, claimed when you file, and it frequently produces a refund because it is deducted at a flat rate without regard to your expenses. The Computation agent can compare what should have been deducted against what was.",
+      "relatedTools": [
+        "compute_194j_tds"
+      ]
+    },
+    {
+      "id": "invoicing",
+      "title": "Invoicing basics",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "invoice",
+        "bill a client",
+        "raise invoice"
+      ],
+      "body": "An invoice is the document that establishes what you are owed and why. It should carry a unique number, the date, your details and the client's, a description of the work, the amount, and any tax charged separately from the fee. Numbering invoices in an unbroken sequence matters more than it appears: gaps invite questions later. Keeping copies is how you reconcile what you were paid against what you billed.",
+      "relatedTools": []
+    },
+    {
+      "id": "separate-business-account",
+      "title": "Keeping a separate business account",
+      "category": "freelance",
+      "level": "beginner",
+      "aliases": [
+        "business account",
+        "separate account",
+        "current account"
+      ],
+      "body": "Running business money through a separate account is the single most useful habit for anyone self-employed. It makes expenses provable, makes turnover easy to establish, and removes the need to reconstruct months later which restaurant bill was a client meeting. It also makes the question of whether a payment was business or personal answerable rather than a matter of memory.",
+      "relatedTools": [
+        "categorize_spending"
+      ]
+    },
+    {
+      "id": "what-is-gst",
+      "title": "What GST is",
+      "category": "gst",
+      "level": "beginner",
+      "aliases": [
+        "gst",
+        "goods and services tax",
+        "what is gst"
+      ],
+      "body": "GST is a tax on the sale of goods and services. You do not bear it yourself: you add it to what you charge your customer, collect it, and pass it to the government. It sits on top of your fee rather than coming out of it. Because it flows through you rather than to you, GST collected is never your income, and treating it as income is one of the more common mistakes a new freelancer makes.",
+      "relatedTools": [
+        "compute_gst"
+      ]
+    },
+    {
+      "id": "gst-registration",
+      "title": "When you must register for GST",
+      "category": "gst",
+      "level": "beginner",
+      "aliases": [
+        "gst registration",
+        "gst threshold",
+        "do i need gst"
+      ],
+      "body": "Registration becomes compulsory once your annual turnover crosses a threshold, which differs for services and for goods. Below it, registration is optional. Crossing it is not a gradual process: once you cross, you must register, charge GST, and file returns regularly. Anyone approaching the threshold should know where they stand well before reaching it, because the obligations begin immediately. The Computation agent can tell you how much headroom you have.",
+      "relatedTools": [
+        "compute_gst"
+      ]
+    },
+    {
+      "id": "input-tax-credit",
+      "title": "Input tax credit",
+      "category": "gst",
+      "level": "intermediate",
+      "aliases": [
+        "input tax credit",
+        "itc",
+        "gst on expenses"
+      ],
+      "body": "You pay GST on your own business purchases as well as charging it on your sales. Input tax credit lets you set one against the other, so you hand over only the difference. This is what stops the tax compounding at every stage of a supply chain. To claim it, the purchase must be for the business, you must hold a proper invoice, and your supplier must actually have declared the sale.",
+      "relatedTools": [
+        "compute_gst"
+      ]
+    },
+    {
+      "id": "gst-exports",
+      "title": "GST on work for overseas clients",
+      "category": "gst",
+      "level": "intermediate",
+      "aliases": [
+        "export gst",
+        "foreign client",
+        "zero rated"
+      ],
+      "body": "Services supplied to a client outside India are treated as zero-rated. No GST is charged to the client, but you can still claim credit for GST paid on your own expenses. That combination is deliberate: it keeps exports competitive without stranding the tax you paid along the way. Export receipts still count towards the registration threshold even though no GST is charged on them.",
+      "relatedTools": [
+        "compute_gst"
+      ]
+    },
+    {
+      "id": "gst-returns",
+      "title": "GST returns",
+      "category": "gst",
+      "level": "intermediate",
+      "aliases": [
+        "gstr",
+        "gst filing",
+        "monthly gst return"
+      ],
+      "body": "Registration brings recurring filing. Sales are reported in one return and the summary with payment in another, each with its own monthly deadline. The returns are how the department matches your declared sales against your customers' claimed credits, which is why a mismatch surfaces quickly. Late filing attracts a daily fee, so the discipline of filing on time matters more than the amounts involved.",
+      "relatedTools": [
+        "get_deadlines"
+      ]
+    },
+    {
+      "id": "budgeting",
+      "title": "Budgeting",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "budget",
+        "budgeting",
+        "how to plan spending"
+      ],
+      "body": "A budget is a plan for money you have not spent yet. Its purpose is not restriction but visibility: most people are surprised by where their money actually went, and cannot change what they cannot see. A workable budget starts from what you already spend rather than from an ideal, groups it into a handful of categories, and sets a limit only where a limit is genuinely needed. Categories you never exceed do not need one.",
+      "relatedTools": [
+        "categorize_spending"
+      ]
+    },
+    {
+      "id": "savings-rate",
+      "title": "Savings rate",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "savings rate",
+        "how much should i save",
+        "percentage saved"
+      ],
+      "body": "Your savings rate is the share of income you keep rather than spend. It is a more useful number than the amount saved, because it stays meaningful as your income changes and it makes two very different salaries comparable. It is also the number that determines how quickly any goal arrives: doubling what you save halves the time, whatever the amounts involved.",
+      "relatedTools": [
+        "compute_savings_rate"
+      ]
+    },
+    {
+      "id": "emergency-fund",
+      "title": "An emergency fund",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "emergency fund",
+        "rainy day",
+        "safety net"
+      ],
+      "body": "An emergency fund is money set aside for the loss of income or an unavoidable expense. Its job is to stop a temporary problem becoming a permanent one by forcing you into debt. It should be held somewhere you can reach within a day and where the value does not move, which usually means a savings account rather than an investment. It is normally the first goal to fund, because every other plan depends on not having to unwind it in a bad month.",
+      "relatedTools": [
+        "compute_goal_progress"
+      ]
+    },
+    {
+      "id": "setting-goals",
+      "title": "Setting financial goals",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "goal",
+        "financial goal",
+        "saving for something"
+      ],
+      "body": "A goal is a specific amount by a specific date. Both halves matter. Without an amount there is nothing to measure, and without a date there is no way to know what to set aside each month. Once both exist, the monthly figure follows arithmetically and the question stops being whether you feel able to save and becomes whether the date or the amount needs to move.",
+      "relatedTools": [
+        "compute_goal_progress"
+      ]
+    },
+    {
+      "id": "net-worth",
+      "title": "Net worth",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "net worth",
+        "how much am i worth",
+        "total assets"
+      ],
+      "body": "Net worth is everything you own minus everything you owe. It is a single number for your overall position at a moment in time, and unlike income it reflects accumulation rather than flow. Someone earning well with large debts can have a lower net worth than someone earning modestly with none. Tracked over months, its direction matters far more than its level.",
+      "relatedTools": [
+        "compute_net_worth"
+      ]
+    },
+    {
+      "id": "good-and-bad-debt",
+      "title": "Debt that helps and debt that does not",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "debt",
+        "loan",
+        "good debt",
+        "credit card debt"
+      ],
+      "body": "Debt is not uniformly harmful. Borrowing at a low rate for something that lasts, such as education or a home, can be reasonable. Borrowing at a high rate for something consumed immediately rarely is. Credit card balances sit firmly in the second category because the rate charged on a carried balance is far above almost any return you could earn elsewhere, which makes clearing it the highest-return use of spare money most people have.",
+      "relatedTools": []
+    },
+    {
+      "id": "compounding",
+      "title": "Compounding",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "compound interest",
+        "compounding",
+        "why start early"
+      ],
+      "body": "Compounding means the returns you earn begin earning returns of their own. Its effect is small early and large late, which is why time invested matters more than amount invested for anyone young. The uncomfortable corollary is that it works identically against you on borrowings, which is why a carried credit card balance grows in the same shape as a long-term investment, only faster.",
+      "relatedTools": []
+    },
+    {
+      "id": "elss",
+      "title": "Equity funds with a lock-in",
+      "category": "money",
+      "level": "intermediate",
+      "aliases": [
+        "elss",
+        "tax saving mutual fund",
+        "equity linked savings"
+      ],
+      "body": "These are equity mutual funds that qualify for the main investment deduction and carry a lock-in period, which is the shortest among the common tax-saving options. Because they are equity, the value moves and can fall; the lock-in means you cannot exit during a fall. They suit someone with a long horizon who was going to invest in equity regardless, rather than someone looking for a safe place to park money before a deadline.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "ppf",
+      "title": "The public provident fund",
+      "category": "money",
+      "level": "intermediate",
+      "aliases": [
+        "ppf",
+        "provident fund",
+        "safe tax saving"
+      ],
+      "body": "A government-backed long-term savings account with a fixed declared return, a long lock-in and favourable tax treatment on the way out. The return is modest but certain, and the term is long. It suits the portion of savings that should not be exposed to market movement, and it contrasts directly with equity options that offer higher expected returns and no certainty.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "tax-saving-vs-investing",
+      "title": "Saving tax against investing well",
+      "category": "money",
+      "level": "intermediate",
+      "aliases": [
+        "should i invest to save tax",
+        "tax saving investment"
+      ],
+      "body": "A deduction reduces your tax, but the money is still committed to whatever you bought. An investment chosen only for the deduction, with a long lock-in and a poor return, can cost more than the tax it saved. The sensible order is to decide what you want to own, then check which of those choices happens to qualify. Buying in March under time pressure is how most poor choices in this area are made.",
+      "relatedTools": [
+        "optimize_deductions"
+      ]
+    },
+    {
+      "id": "insurance-is-not-investment",
+      "title": "Insurance and investment are different jobs",
+      "category": "money",
+      "level": "intermediate",
+      "aliases": [
+        "insurance",
+        "term plan",
+        "endowment",
+        "ulip"
+      ],
+      "body": "Insurance exists to protect against a loss you could not absorb. Investment exists to grow money. Products that promise both usually do neither well, because the cost of the protection is buried inside the returns. Pure protection is generally cheaper bought separately, which leaves the rest of the money free to be invested on its own merits.",
+      "relatedTools": []
+    },
+    {
+      "id": "lifestyle-inflation",
+      "title": "Spending rising with income",
+      "category": "money",
+      "level": "beginner",
+      "aliases": [
+        "lifestyle inflation",
+        "salary hike spending",
+        "why am i not saving more"
+      ],
+      "body": "Lifestyle inflation is the tendency for spending to rise alongside income, leaving the amount saved unchanged despite earning considerably more. It is why a raise often does not feel like one. The usual remedy is to decide in advance what share of any increase will go to saving, before the higher figure becomes normal, because it is far easier not to start a cost than to stop one.",
+      "relatedTools": [
+        "compute_savings_rate"
+      ]
+    }
+  ]
+}

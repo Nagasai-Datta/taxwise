@@ -5,9 +5,9 @@
     "governingAct": "Income-tax Act, 1961",
     "actNote": "The Income-tax Act, 2025 comes into force on 1 April 2026 and governs FY 2026-27 onward. This project targets FY 2025-26, which remains under the 1961 Act. Section names below (80C, 87A, 44AD) are the 1961 Act numbering.",
     "verification": {
-      "status": "UNVERIFIED",
-      "verifiedBy": "",
-      "verifiedOn": "",
+      "status": "VERIFIED",
+      "verifiedBy": "Naga sai datta",
+      "verifiedOn": "8th september 2026",
       "howToVerify": "Run: npm run checklist. Check every figure against the official calculator, then fill verifiedBy and verifiedOn and set status to VERIFIED."
     }
   },

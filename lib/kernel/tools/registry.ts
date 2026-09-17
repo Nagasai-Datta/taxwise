@@ -6,8 +6,11 @@ import { optimizeDeductions } from "../optimize";
 import { computeHRAExemption } from "../hra";
 import { computeGST, presumptiveVsBooks, computeAdvanceTax, compute194J, getApplicableDeadlines } from "../business";
 import { computeNetWorth, categorizeSpending, computeSavingsRate, computeGoalProgress } from "../management";
-import { deductionCatalogue } from "../rules";
+import { deductionCatalogue, RULES } from "../rules";
 import { groupedFor, guidedStartFor } from "../capabilities";
+import { prepareITR, prefillFrom, type Form16 } from "../itr";
+import { propagateGraph, invertGraph, NODES, LEVERS, type NodeId } from "../graph";
+import { compareInvestments, buildInvoice, invoiceDefaults, type InvoiceInput } from "../advisory";
 import { toTaxInput } from "../profiles";
 import { findProfile, listAccounts, listTransactions, listGoals } from "@/lib/db/repositories";
 
@@ -468,6 +471,349 @@ export const TOOLS: Record<string, ToolSpec> = {
         data: out,
         facts: { returned: out.length, totalAvailable: tx.length },
         trace: null,
+      };
+    },
+  },
+
+  compare_investments: {
+    name: "compare_investments",
+    description: "Compare the places a deduction can be invested: which section each falls under, how long the money is locked, how the payout is taxed, and the exact rupee tax each would save. It does not compare returns.",
+    inputSchema: Empty,
+    component: "investment_comparison",
+    async run(_a, ctx) {
+      const p = await loadProfile(ctx.profileId);
+      const base = toTaxInput(p);
+      const c = compareInvestments({
+        grossIncome: base.grossIncome,
+        isSalaried: base.isSalaried,
+        deductions: base.deductions ?? {},
+        hra: base.hra,
+      });
+      const best = [...c.options].filter((o) => o.eligible).sort((a, b) => b.taxSavedIfFilled - a.taxSavedIfFilled)[0];
+      return {
+        data: c,
+        facts: {
+          baselineTax: c.baselineTax,
+          optionCount: c.options.length,
+          withHeadroom: c.options.filter((o) => o.eligible).length,
+          largestSaving: best?.taxSavedIfFilled ?? 0,
+          largestSavingOption: best?.name ?? "none",
+        },
+        trace: null,
+      };
+    },
+  },
+
+  generate_invoice: {
+    name: "generate_invoice",
+    description: "Prepare an invoice for a client, showing the fee, any GST charged on top, the TDS the client will deduct, and what will actually arrive. Call with no arguments and a form is shown. Business and professional users only.",
+    inputSchema: z.object({
+      invoice: z.record(z.union([z.string(), z.number(), z.boolean()])).optional()
+        .describe("The invoice details. Omit this to have the user fill them in."),
+    }),
+    component: "invoice",
+    async run(a, ctx) {
+      const p = await loadProfile(ctx.profileId);
+
+      if (p.occupation === "salaried") {
+        return {
+          data: { applicable: false, reason: "An invoice is raised by someone billing a client. A salaried employee is paid through payroll instead." },
+          facts: { applicable: "no" } as Record<string, number | string>,
+          trace: null,
+        };
+      }
+
+      if (!a.invoice) {
+        const d = invoiceDefaults();
+        return {
+          data: null,
+          facts: { status: "awaiting invoice details" } as Record<string, number | string>,
+          trace: null,
+          needsInput: {
+            title: "Invoice details",
+            description: "Nothing is sent to anyone. This produces a document you can check and download.",
+            submitLabel: "Prepare the invoice",
+            resumeTool: "generate_invoice",
+            fields: [
+              { name: "invoiceNumber", label: "Invoice number", help: "Keep the sequence unbroken. Gaps invite questions later.", type: "text", group: "Invoice", defaultValue: d.invoiceNumber },
+              { name: "invoiceDate", label: "Date", type: "text", group: "Invoice", defaultValue: d.invoiceDate },
+              { name: "clientName", label: "Client name", type: "text", group: "Client", required: true, defaultValue: "" },
+              { name: "clientAddress", label: "Client address", type: "text", group: "Client", defaultValue: "" },
+              { name: "clientGSTIN", label: "Client GSTIN", help: "Leave blank for an individual or an overseas client.", type: "text", group: "Client", defaultValue: "" },
+              { name: "description", label: "What the work was", type: "text", group: "Work", required: true, defaultValue: "" },
+              { name: "amount", label: "Your fee", help: "Before GST. GST is added on top, never taken out of it.", type: "number", group: "Work", defaultValue: 0 },
+              { name: "isExport", label: "Client is outside India", type: "select", group: "Tax",
+                options: [{ value: "no", label: "No" }, { value: "yes", label: "Yes, this is an export" }], defaultValue: "no" },
+              { name: "chargeGST", label: "Charge GST", help: "Only if you are registered. Exports are zero-rated either way.", type: "select", group: "Tax",
+                options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }], defaultValue: "yes" },
+              { name: "placeOfSupply", label: "Place of supply", type: "text", group: "Tax", defaultValue: p.city },
+              { name: "notes", label: "Notes for the client", type: "text", group: "Work", defaultValue: "" },
+            ],
+          },
+        };
+      }
+
+      const raw = a.invoice as Record<string, string | number | boolean>;
+      const str = (k: string) => String(raw[k] ?? "");
+      const yes = (k: string) => String(raw[k] ?? "").toLowerCase() === "yes" || raw[k] === true;
+      const input: InvoiceInput = {
+        invoiceNumber: str("invoiceNumber"),
+        invoiceDate: str("invoiceDate"),
+        clientName: str("clientName"),
+        clientAddress: str("clientAddress"),
+        clientGSTIN: str("clientGSTIN"),
+        description: str("description"),
+        amount: Number(String(raw.amount ?? "").replace(/[,\s\u20B9]/g, "")) || 0,
+        chargeGST: yes("chargeGST"),
+        isExport: yes("isExport"),
+        placeOfSupply: str("placeOfSupply"),
+        notes: str("notes"),
+      };
+
+      const inv = buildInvoice(input, p);
+      return {
+        data: inv,
+        facts: {
+          fee: inv.subtotal,
+          gst: inv.gstAmount,
+          invoiceTotal: inv.total,
+          tdsExpected: inv.tdsExpected,
+          amountYouShouldReceive: inv.expectedReceipt,
+          client: inv.header.to.name,
+        },
+        trace: inv.trace,
+      };
+    },
+  },
+
+  explore_graph: {
+    name: "explore_graph",
+    description: "Open the causal finance graph: every figure in the user's position and what it is computed from, with sliders to see what moves what. Use when the user asks what happens if something changes, or wants to explore their situation rather than ask one question.",
+    inputSchema: z.object({
+      regime: z.enum(["new", "old"]).optional().describe("Which regime to explore under. Defaults to old, where the most levers exist."),
+    }),
+    component: "causal_graph",
+    async run(a, ctx) {
+      const p = await loadProfile(ctx.profileId);
+      const regime = a.regime ?? "old";
+      const accs = await listAccounts(ctx.profileId);
+      const tx = (await Promise.all(accs.map((x) => listTransactions(x.id)))).flat();
+      const spent = tx.filter((t) => t.direction === "debit").reduce((n, t) => n + t.amount, 0);
+
+      const inputs: Record<string, number> = {
+        grossSalary: p.income.grossAnnual,
+        basicSalary: p.income.basicAnnual ?? Math.round(p.income.grossAnnual * 0.5),
+        hraReceived: p.income.hraReceivedAnnual ?? 0,
+        rentAnnual: p.rentMonthly * 12,
+        d80C: p.deductions["80C"] ?? 0,
+        d80D: p.deductions["80D"] ?? 0,
+        d80CCD1B: p.deductions["80CCD1B"] ?? 0,
+        d24b: p.deductions["24b"] ?? 0,
+        annualSpending: spent,
+        isMetro: p.isMetro ? 1 : 0,
+      };
+
+      const g = propagateGraph(inputs, regime);
+      return {
+        data: { inputs, regime, values: g.values, nodes: NODES, levers: LEVERS, name: p.name },
+        facts: {
+          regime: regime === "new" ? "New Regime" : "Old Regime",
+          totalTax: g.values.totalTax,
+          taxableIncome: g.values.taxableIncome,
+          netIncome: g.values.netIncome,
+          annualSaving: g.values.annualSaving,
+          savingsRatePercent: g.values.savingsRate,
+          nodeCount: NODES.length,
+        },
+        trace: g.trace,
+      };
+    },
+  },
+
+  solve_backwards: {
+    name: "solve_backwards",
+    description: "Work backwards from a figure the user wants. Given a target such as a total tax of 40000, and which input to move, find the input value that reaches it. Use for questions of the form 'how much would I need to invest so that my tax is X'.",
+    inputSchema: z.object({
+      target: z.enum(["totalTax", "taxableIncome", "netIncome", "annualSaving", "savingsRate"])
+        .describe("The figure the user wants to hit."),
+      targetValue: z.number().describe("The value they want it to be. A percentage for savingsRate, rupees otherwise."),
+      lever: z.enum(["d80C", "d80D", "d80CCD1B", "d24b", "grossSalary", "rentAnnual", "annualSpending"])
+        .optional()
+        .describe("Which input to move. Omit it and a sensible one is chosen: investments for a tax target, spending for a savings target."),
+      regime: z.enum(["new", "old"]).optional(),
+    }),
+    component: "inverse_result",
+    async run(a, ctx) {
+      const p = await loadProfile(ctx.profileId);
+      const regime = a.regime ?? "old";
+      const accs = await listAccounts(ctx.profileId);
+      const tx = (await Promise.all(accs.map((x) => listTransactions(x.id)))).flat();
+      const spent = tx.filter((t) => t.direction === "debit").reduce((n, t) => n + t.amount, 0);
+
+      const inputs: Record<string, number> = {
+        grossSalary: p.income.grossAnnual,
+        basicSalary: p.income.basicAnnual ?? Math.round(p.income.grossAnnual * 0.5),
+        hraReceived: p.income.hraReceivedAnnual ?? 0,
+        rentAnnual: p.rentMonthly * 12,
+        d80C: p.deductions["80C"] ?? 0,
+        d80D: p.deductions["80D"] ?? 0,
+        d80CCD1B: p.deductions["80CCD1B"] ?? 0,
+        d24b: p.deductions["24b"] ?? 0,
+        annualSpending: spent,
+        isMetro: p.isMetro ? 1 : 0,
+      };
+
+      /**
+       * A user asking "how much do I need to invest so my tax is X" has named
+       * the target but not the lever. Asking them which deduction to move is a
+       * worse answer than picking the obvious one and saying which was picked.
+       */
+      const DEFAULT_LEVER: Record<string, NodeId> = {
+        totalTax: "d80C", taxableIncome: "d80C", netIncome: "d80C",
+        annualSaving: "annualSpending", savingsRate: "annualSpending",
+      };
+      const lever = (a.lever ?? DEFAULT_LEVER[a.target] ?? "d80C") as NodeId;
+
+      const r = invertGraph({
+        inputs, lever, target: a.target as NodeId,
+        targetValue: a.targetValue, regime,
+      });
+
+      /**
+       * When the target cannot be reached, requiredLever is the far end of the
+       * range and nothing more. Publishing it invites exactly the sentence a
+       * model wrote in testing: "you would need to invest 1,50,000 to bring
+       * your tax to 40,000", which is false. It is withheld, and the best the
+       * lever can actually manage is given instead.
+       */
+      const facts: Record<string, number | string> = {
+        achievable: r.achievable ? "yes" : "no",
+        lever: r.leverLabel,
+        target: r.targetLabel,
+        wantedValue: r.targetValue,
+        currentLever: r.currentLever,
+        currentValue: r.currentValue,
+        iterations: r.iterations,
+        leverChosenAutomatically: a.lever ? "no" : "yes",
+        targetIsRate: a.target === "savingsRate" ? "yes" : "no",
+      };
+      if (r.achievable) {
+        facts.requiredLever = r.requiredLever;
+        facts.achievedValue = r.achievedValue;
+      } else {
+        facts.bestAchievable = r.achievedValue;
+      }
+
+      return {
+        data: r,
+        facts,
+        // An unreachable target is a verdict a paraphrase can invert.
+        authoritative: !r.achievable,
+        trace: null,
+      };
+    },
+  },
+
+  prepare_itr: {
+    name: "prepare_itr",
+    description: "Prepare the user's income tax return from their Form 16. Call with no arguments and a form is shown for the Form 16 figures; call again with those figures and the return is prepared. Salaried users only. Nothing is submitted anywhere.",
+    inputSchema: z.object({
+      form16: z.record(z.union([z.string(), z.number()])).optional()
+        .describe("The figures from Form 16. Omit this to have the user fill them in."),
+    }),
+    component: "itr_summary",
+    async run(a, ctx) {
+      const p = await loadProfile(ctx.profileId);
+
+      if (p.occupation !== "salaried") {
+        return {
+          data: { applicable: false, reason: "A return is prepared from a Form 16, which only a salaried employee receives. Business and professional income is filed differently." },
+          facts: { applicable: "no" } as Record<string, number | string>,
+          trace: null,
+        };
+      }
+
+      /**
+       * No Form 16 figures yet. The tool cannot answer and will not guess, so
+       * it asks. Values are prefilled from the profile where they are known,
+       * so the user corrects rather than types from nothing.
+       */
+      if (!a.form16) {
+        const pre = prefillFrom(p);
+        return {
+          data: null,
+          facts: { status: "awaiting Form 16 details" } as Record<string, number | string>,
+          trace: null,
+          needsInput: {
+            title: "Your Form 16",
+            description: "These are the items on Form 16 Part B, in the order they are printed. Anything you leave at zero is treated as zero. Nothing is sent anywhere.",
+            submitLabel: "Prepare my return",
+            resumeTool: "prepare_itr",
+            fields: [
+              { name: "employerName", label: "Employer name", type: "text", group: "Part A", defaultValue: "" },
+              { name: "employerTAN", label: "Employer TAN", type: "text", group: "Part A", defaultValue: "" },
+              { name: "tdsDeducted", label: "Total tax deducted", help: "The total TDS from Part A, not the tax payable shown in Part B.", type: "number", group: "Part A", defaultValue: pre.tdsDeducted },
+
+              { name: "salary17_1", label: "Salary under section 17(1)", help: "Item 1(a). Basic, allowances and bonus combined.", type: "number", group: "1. Gross salary", defaultValue: pre.salary17_1 },
+              { name: "perquisites17_2", label: "Perquisites under section 17(2)", help: "Item 1(b). Usually zero unless you have a company car or accommodation.", type: "number", group: "1. Gross salary", defaultValue: 0 },
+              { name: "profitsInLieu17_3", label: "Profits in lieu of salary under 17(3)", help: "Item 1(c). Usually zero.", type: "number", group: "1. Gross salary", defaultValue: 0 },
+
+              { name: "hraExempt10_13A", label: "House rent allowance exempt", help: "Item 2(a), under section 10(13A). Zero if your employer used the new regime.", type: "number", group: "2. Exempt allowances", defaultValue: pre.hraExempt10_13A },
+              { name: "otherExempt10", label: "Other exempt allowances", help: "Item 2(b), such as leave travel allowance.", type: "number", group: "2. Exempt allowances", defaultValue: 0 },
+
+              { name: "professionalTax16_3", label: "Professional tax", help: "Item 4(c), under section 16(iii).", type: "number", group: "4. Section 16", defaultValue: 0 },
+
+              { name: "housePropertyIncome", label: "Income from house property", help: "Item 7(a). Enter a negative number for a loss, such as home loan interest.", type: "number", group: "7. Other income", defaultValue: 0 },
+              { name: "otherSourcesIncome", label: "Income from other sources", help: "Item 7(b), such as bank interest.", type: "number", group: "7. Other income", defaultValue: 0 },
+
+              { name: "deduction80C", label: "Section 80C", type: "number", group: "10. Chapter VI-A", defaultValue: pre.deduction80C },
+              { name: "deduction80D", label: "Section 80D, health insurance", type: "number", group: "10. Chapter VI-A", defaultValue: pre.deduction80D },
+              { name: "deduction80CCD1B", label: "Section 80CCD(1B), pension", type: "number", group: "10. Chapter VI-A", defaultValue: pre.deduction80CCD1B },
+              { name: "deduction80TTA", label: "Section 80TTA, savings interest", type: "number", group: "10. Chapter VI-A", defaultValue: pre.deduction80TTA },
+            ],
+          },
+        };
+      }
+
+      const raw = a.form16 as Record<string, string | number>;
+      const num = (k: string) => {
+        const v = raw[k];
+        const n = typeof v === "number" ? v : Number(String(v ?? "").replace(/[,\s\u20B9]/g, ""));
+        return Number.isFinite(n) ? n : 0;
+      };
+      const form: Form16 = {
+        employerName: String(raw.employerName ?? ""),
+        employerTAN: String(raw.employerTAN ?? ""),
+        assessmentYear: String(raw.assessmentYear ?? RULES._meta.assessmentYear),
+        salary17_1: num("salary17_1"),
+        perquisites17_2: num("perquisites17_2"),
+        profitsInLieu17_3: num("profitsInLieu17_3"),
+        hraExempt10_13A: num("hraExempt10_13A"),
+        otherExempt10: num("otherExempt10"),
+        professionalTax16_3: num("professionalTax16_3"),
+        housePropertyIncome: num("housePropertyIncome"),
+        otherSourcesIncome: num("otherSourcesIncome"),
+        deduction80C: num("deduction80C"),
+        deduction80D: num("deduction80D"),
+        deduction80CCD1B: num("deduction80CCD1B"),
+        deduction80TTA: num("deduction80TTA"),
+        tdsDeducted: num("tdsDeducted"),
+      };
+
+      const r = prepareITR(form, p);
+      return {
+        data: r,
+        facts: {
+          regimeChosen: r.regimeChosen === "new" ? "New Regime" : "Old Regime",
+          grossSalary: r.grossSalary,
+          totalIncome: r.totalIncome,
+          taxPayable: r.taxPayable,
+          tdsDeducted: r.tdsDeducted,
+          refundDue: Math.max(0, r.refundDue),
+          balancePayable: Math.max(0, -r.refundDue),
+          warningCount: r.warnings.length,
+        },
+        trace: r.trace,
       };
     },
   },

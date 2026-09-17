@@ -180,6 +180,7 @@ helps on questions phrased in words the corpus does not contain.
 | `npm run db:studio` | Browse the database in a UI |
 | `npm run corpus:embed` | Embed the concept corpus into pgvector |
 | `npm run corpus:check` | Report how many explainers are embedded |
+| `npm run daemons` | Run one poll of the always-on services from the terminal |
 
 Two pages beyond the chat: **`/profile`** shows one person's money, accounts, goals, deadlines and
 memory; **`/status`** is a build dashboard.
@@ -387,6 +388,11 @@ invest.
 | `compute_savings_rate` | Management | what remains of net income after spending |
 | `compute_goal_progress` | Management | progress and months to target at the current rate |
 | `list_recent_transactions` | Management | most recent transactions across accounts |
+| `compare_investments` | Computation | every place a deduction can go, with the tax each would save. Not returns |
+| `generate_invoice` | Computation | an invoice with GST on top and TDS taken off, asking for the details first |
+| `explore_graph` | Computation | the whole chain of figures, with what each is computed from |
+| `solve_backwards` | Computation | the input value that reaches a figure you name, solved by bisection |
+| `prepare_itr` | Computation | a prepared return from Form 16 figures, in eight steps. Asks for the figures first |
 | `list_capabilities` | all | what this particular user can ask for, grouped |
 | `list_deduction_sections` | Tutor | section names and descriptions, never amounts |
 | `search_concepts` | Tutor | explanatory prose, never figures |
@@ -569,7 +575,7 @@ delete. Every message stores what is needed to redraw it, so reopening one from 
 back the cards and the rule tree, not just the text.
 
 **The three panes.** Conversations on the left, what you can do in the middle, chat on the right.
-The middle pane is filtered by occupation: Priya sees 13 capabilities, Arjun 15, Rohan 16, with 11
+The middle pane is filtered by occupation: Priya sees 17 capabilities, Arjun 19, Rohan 20, with 11
 shared because everyone pays tax. Nothing in it computes; a card composes a question and sends it
 into the chat.
 
@@ -594,14 +600,82 @@ permissions. The rule engine. The tool registry with trace logging. The agent re
 compliance calendar. Retrieval over the corpus by meaning and by term. Three providers assigned by
 measured latency.
 
-**The pages.** `/` is the chat. `/profile` carries money, accounts, goals, the compliance calendar
-and memory. `/status` is a build dashboard.
+**Verdicts the model may not reword.** The guard checks figures, not claims. Given "not
+achievable" alongside a required value, a model wrote that the user "would need to invest
+₹1,50,000 to bring tax down to ₹40,000", which is false, and every figure in it was real. Two
+things changed: a value that is meaningless out of context is no longer published to the model at
+all, and a tool may mark its result as one whose wording comes from the figures rather than from
+the model.
+
+**Comparing where to invest.** Eight options, compared on two kinds of fact kept deliberately
+apart. What the law fixes is knowable: the section, the lock-in, how the payout is taxed. What it
+saves is computable, by re-running the tax engine with that section filled. **What it returns is
+neither**, so there is no return column anywhere, and `data/investments.json` contains no rate at
+all. A table ranking these by an assumed return would be the most confident and least defensible
+thing in the project. It also says that everything under 80C shares one ceiling, so filling one
+leaves less room for the others.
+
+**Invoicing.** For business and professional users. GST is added on top of the fee and passed to
+the government, so it is never income. TDS is taken off by the client before paying, so it is not
+a cost. The amount that actually arrives is therefore neither the fee nor the invoice total, and
+the result says which is which.
+
+**Invoices and investments.** An invoice is not a formatting exercise: whether GST is charged,
+whether the client deducts at source, and therefore what actually reaches the bank all follow from
+the rules. A freelancer who invoices ₹2,00,000 and receives ₹2,16,000 has not been short-changed,
+and an overseas client deducts nothing at all because section 194J obliges an Indian payer. The
+investment comparison computes the tax saved by re-running the engine, then states plainly that it
+is the same whichever option is chosen, because a deduction reduces taxable income by the amount
+invested. What differs is the lock-in, the certainty and where the money ends up.
+
+**The causal finance graph.** Twenty nodes, each knowing what it is computed from. Forwards is
+ordinary: move an input and everything downstream follows. **Backwards is the part nothing on the
+market does**: name the tax you want to pay and find out what you would have to invest to get
+there. Solved by bisection rather than algebra, because the section 87A rebate is a cliff and an
+algebraic inverse steps over it without noticing. When a target cannot be reached, it says so
+rather than presenting the nearest value as though it were the answer.
+
+**Preparing a return.** `prepare_itr` runs eight deterministic steps from the figures on a Form 16
+and produces a document shaped like an ITR-1, downloadable as JSON. Nothing is submitted anywhere.
+No model is involved at any point, which matters most here because this is the one output a person
+might act on.
+
+**Tools that ask before they answer.** A tool may return a request for input instead of a result.
+The shell renders it as a form inside the conversation, and the tool is called again with the
+answers, through the same doorway with the same permission check and the same audit row. A tool
+that cannot know something asks rather than guessing.
+
+**The always-on services.** Three of them, polling on the profile page. The **compliance calendar**
+watches the statutory dates that apply to this person and escalates as each approaches. The
+**proactive monitor** watches transactions, turnover against the GST threshold, unused deduction
+headroom near year end, and spending running ahead of receipts. The **verifiable trace** reports
+what has been computed and how long it took.
+
+They report; they never act, and they never compute an answer. Each observation can carry a
+question, and pressing it hands that question to the chat, so every answer still comes from the
+same path. Polling happens in the browser on a thirty minute interval, overridable with
+`NEXT_PUBLIC_DAEMON_POLL_SECONDS`, with a **check now** button beside it. There is no server
+timer: a background job that outlives a request would be the only part of this system that cannot
+be reproduced by re-running a command.
+
+**The payments gateway.** `/gateway` is a separate application: its own route, its own look, its
+own vocabulary, and no access to the agents, the kernel or the rulebook. Add funds to any account
+or send money between any two, and it writes a transaction row and updates a balance. **TaxWise
+only reads that table.**
+
+That separation is the point rather than a shortcut. An application that can see a bank without
+touching it is the shape of India's Account Aggregator framework, and it is what makes the
+proactive monitor demonstrable: money moves in one window, the monitor notices in the other, and
+nothing in the main application had to be told. A transfer writes both sides in one database
+transaction, because one that debited an account and then failed before crediting the other would
+be worse than one that never happened.
+
+**The pages.** `/` is the chat. `/profile` carries money, accounts, goals, the compliance calendar,
+the always-on services and memory. `/gateway` is the payments app. `/status` is a build dashboard.
 
 ### Designed, not yet implemented
 
-Proactive monitor, polling for changes · causal finance
-graph, forward and backward · ITR autopilot · payments gateway · invoice generator · investment
-comparator · functionality pane per user type.
+Nothing outstanding. Every item scoped for the final review is built.
 
 ### Out of scope entirely
 

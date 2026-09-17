@@ -21,7 +21,8 @@
     "providers": "tsx scripts/providers-check.ts",
     "corpus:embed": "tsx scripts/corpus.ts",
     "corpus:check": "tsx scripts/corpus.ts --check",
-    "bench": "tsx scripts/bench.ts"
+    "bench": "tsx scripts/bench.ts",
+    "daemons": "tsx scripts/daemons.ts"
   },
   "dependencies": {
     "next": "16.3.4",

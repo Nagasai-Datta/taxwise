@@ -247,6 +247,21 @@ export async function runAgent(opts: {
   const guard = checkReply(text, factList);
   let degraded = modelFailed;
 
+  /**
+   * A verdict the model could invert. Its phrasing is discarded before the
+   * guard even runs, because the guard would pass it: every figure would be
+   * real and only the claim would be wrong.
+   */
+  const authoritative = collected.some((c) => c.authoritative);
+  if (authoritative && text) {
+    text = describeResult(collected);
+    steps.push({
+      stage: "validate", usedModel: false,
+      detail: "This result carries a verdict a paraphrase could reverse, so it was worded from the figures rather than by the model.",
+      ms: 0,
+    });
+  }
+
   if (!text || !guard.ok) {
     text = describeResult(collected);
     degraded = true;

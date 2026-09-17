@@ -59,6 +59,16 @@ export const CAPABILITIES: Capability[] = [
     ask: "How can I pay less tax?", tool: "optimize_deductions", occupations: ALL,
   },
   {
+    id: "graph", group: "tax", title: "Explore what moves what",
+    blurb: "Every figure in your position and what it is computed from, with sliders. Drag one and watch the rest follow.",
+    ask: "Show me what moves what", tool: "explore_graph", occupations: ALL,
+  },
+  {
+    id: "backwards", group: "tax", title: "Work backwards from a target",
+    blurb: "Name the tax you want to pay and find out how much you would have to invest to get there.",
+    ask: "How much do I need to invest for my tax to be 40000?", tool: "solve_backwards", occupations: ALL,
+  },
+  {
     id: "what-if", group: "tax", title: "Try an investment",
     blurb: "See what your tax becomes if you invest a particular amount.",
     ask: "What if I invest 150000 in 80C?", tool: "what_if_deduction", occupations: ALL,
@@ -67,6 +77,11 @@ export const CAPABILITIES: Capability[] = [
     id: "hra", group: "tax", title: "Work out your rent relief",
     blurb: "The HRA exemption is the least of three amounts. See all three and which one won.",
     ask: "How much HRA can I claim?", tool: "compute_hra_exemption", occupations: ["salaried"],
+  },
+  {
+    id: "file-itr", group: "tax", title: "Prepare your return",
+    blurb: "Enter the figures from your Form 16 and get a prepared return, with every step shown. Nothing is submitted anywhere.",
+    ask: "Help me prepare my tax return", tool: "prepare_itr", occupations: ["salaried"],
   },
   {
     id: "deadlines", group: "tax", title: "See what is due, and when",
@@ -91,12 +106,22 @@ export const CAPABILITIES: Capability[] = [
     ask: "When is my advance tax due?", tool: "compute_advance_tax", occupations: SELF,
   },
   {
+    id: "invoice", group: "business", title: "Raise an invoice",
+    blurb: "Prepare an invoice for a client. It shows the fee, the GST on top, the tax the client will deduct, and what will actually arrive.",
+    ask: "Help me raise an invoice", tool: "generate_invoice", occupations: SELF,
+  },
+  {
     id: "tds-194j", group: "business", title: "Check what clients deducted",
     blurb: "Clients cut tax from professional fees. See what they should have cut against what they did.",
     ask: "How much TDS did my clients deduct?", tool: "compute_194j_tds", occupations: ["profession"],
   },
 
   /* ---------------------------------------------------------- money */
+  {
+    id: "investments", group: "money", title: "Compare where to invest",
+    blurb: "Every place a deduction can go, with how long it is locked, how it is taxed on exit, and the exact tax each would save.",
+    ask: "Where should I invest for tax purposes?", tool: "compare_investments", occupations: ALL,
+  },
   {
     id: "net-worth", group: "money", title: "See what you are worth",
     blurb: "Everything across your connected accounts, added up.",

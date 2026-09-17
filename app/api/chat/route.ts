@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { orchestrate } from "@/lib/orchestrator";
 import { createConversation, appendMessage, touchConversation } from "@/lib/db/repositories";
 import { explainQueryFor } from "@/lib/agents/approach";
+import { callTool } from "@/lib/kernel/tools/execute";
+import { agentsFor } from "@/lib/kernel/agents";
+import { describeResult } from "@/lib/agents/describe";
 import { describeApproach } from "@/lib/agents/approach";
 
 export const runtime = "nodejs";
@@ -40,6 +43,52 @@ export async function POST(req: Request) {
     let conversationId: string | null = body.conversationId ? String(body.conversationId) : null;
 
     if (!message) return NextResponse.json({ error: "Empty message" }, { status: 400 });
+
+    /**
+     * A form coming back.
+     *
+     * The tool asked for something it could not know, the user supplied it,
+     * and the tool is now called again with those values. Routing is skipped
+     * because the tool is already known, but the call still goes through
+     * callTool, so the permission check runs and a row is written to the audit
+     * log exactly as it would for any other call.
+     */
+    if (body.resumeTool) {
+      const tool = String(body.resumeTool);
+      const agent = agentsFor(tool)[0];
+      if (!agent) return NextResponse.json({ error: `No agent may call ${tool}` }, { status: 400 });
+
+      const r = await callTool({
+        agent, tool,
+        args: { form16: body.values ?? {} },
+        ctx: { profileId },
+      });
+
+      const text = describeResult([r]);
+      const results = [{
+        tool: r.tool, component: r.component, facts: r.facts,
+        data: r.data, trace: r.trace, durationMs: r.durationMs,
+      }];
+
+      if (conversationId) {
+        await appendMessage({
+          conversationId, profileId, role: "assistant", content: text,
+          agent, provider: "deterministic",
+          mode: "interactive", component: r.component,
+          payload: { results, route: null, steps: [], guard: { ok: true, offending: [] },
+                     suggestions: [], approach: "You filled in the form, so the calculation ran on exactly the figures you gave." },
+        });
+        await touchConversation(conversationId);
+      }
+
+      return NextResponse.json({
+        conversationId, agent, provider: "deterministic",
+        text, component: r.component, results,
+        approach: "You filled in the form, so the calculation ran on exactly the figures you gave.",
+        route: null, steps: [], guard: { ok: true, offending: [] },
+        suggestions: [], suggestionSource: "fixed",
+      });
+    }
 
     if (isExplain) {
       const r = await orchestrate({ message, profileId, forceAgent: "tutor" });

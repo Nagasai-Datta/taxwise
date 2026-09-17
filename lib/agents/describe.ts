@@ -92,6 +92,48 @@ function describeOne(r: ToolResult): string {
     case "get_profile_summary":
       return `You are ${f.name}, ${f.occupation}, based in ${f.city}, with a gross annual income of ${inr(n(f, "grossAnnualIncome"))}.`;
 
+    case "compare_investments":
+      return `Your tax under the old regime is ${inr(n(f, "baselineTax"))}. `
+        + `${f.withHeadroom} of ${f.optionCount} options still have room, and the largest single saving is `
+        + `${inr(n(f, "largestSaving"))} through ${f.largestSavingOption}. `
+        + "They are compared on the section, the lock-in and the tax treatment, not on returns.";
+
+    case "generate_invoice":
+      return f.applicable === "no"
+        ? "An invoice is raised by someone billing a client. A salaried employee is paid through payroll instead."
+        : f.status === "awaiting invoice details"
+          ? "Tell me who it is for and what the work was, and I will prepare it. Nothing is sent to anyone."
+          : `Invoice for ${f.client}: ${inr(n(f, "fee"))} in fees`
+            + (n(f, "gst") > 0 ? ` plus ${inr(n(f, "gst"))} of GST, ${inr(n(f, "invoiceTotal"))} in total` : ", with no GST charged")
+            + (n(f, "tdsExpected") > 0 ? `. The client will deduct ${inr(n(f, "tdsExpected"))} as TDS, so ${inr(n(f, "amountYouShouldReceive"))} should reach you.` : ".");
+
+    case "explore_graph":
+      return `Here is your whole position under the ${f.regime}, every figure and what it is computed from. `
+        + `Tax is ${inr(n(f, "totalTax"))} on a taxable income of ${inr(n(f, "taxableIncome"))}. `
+        + "Drag a slider and everything below it recomputes.";
+
+    case "solve_backwards": {
+      const picked = f.leverChosenAutomatically === "yes"
+        ? ` I worked it through ${f.lever}, since you did not say which to move.` : "";
+      // The lever is always a rupee amount. The target may be a percentage.
+      const tgt = (k: string) =>
+        f.targetIsRate === "yes" ? `${Math.round(n(f, k) * 100) / 100}%` : inr(n(f, k));
+      return f.achievable === "yes"
+        ? `${f.lever} would need to be ${inr(n(f, "requiredLever"))}, against ${inr(n(f, "currentLever"))} now. That brings ${f.target} to ${tgt("achievedValue")}.${picked}`
+        : `${f.target} cannot reach ${tgt("wantedValue")} by changing ${f.lever} alone, whatever value it is set to. `
+          + `Across its whole range the best it manages is ${tgt("bestAchievable")}, from ${tgt("currentValue")} now.${picked}`;
+    }
+
+    case "prepare_itr":
+      return f.applicable === "no"
+        ? "A return is prepared from a Form 16, which only a salaried employee receives."
+        : f.status === "awaiting Form 16 details"
+          ? "I need the figures from your Form 16 before I can prepare anything. Fill in what you have below; anything you leave at zero is treated as zero."
+          : `Prepared under the ${f.regimeChosen}. Tax comes to ${inr(n(f, "taxPayable"))} against ${inr(n(f, "tdsDeducted"))} already deducted, so ${
+              n(f, "refundDue") > 0 ? `${inr(n(f, "refundDue"))} is due back to you`
+              : n(f, "balancePayable") > 0 ? `${inr(n(f, "balancePayable"))} is still payable`
+              : "nothing is payable and nothing is refundable"}.`;
+
     case "list_capabilities":
       return "Here is what you can ask about. Pick one and I will work it out, or just type a question in your own words.";
 

@@ -33,6 +33,11 @@ const WHAT_IT_DID: Record<string, string> = {
   search_concepts: "looked the idea up in the written material",
   list_deduction_sections: "listed the deduction sections that exist",
   list_capabilities: "listed what you can ask about",
+  explore_graph: "built the chain of figures in your position and what each is computed from",
+  solve_backwards: "searched for the input value that reaches the figure you named, by narrowing the range step by step",
+  prepare_itr: "worked through the eight steps of preparing a return",
+  compare_investments: "re-ran your tax with each deduction filled to its ceiling, to see what each would actually save",
+  generate_invoice: "added the GST on top of your fee and took off the tax your client will deduct",
 };
 
 const WHY_ROUTED: Record<string, string> = {
@@ -72,6 +77,11 @@ export function describeApproach(route: RouteDecision | null, results: ToolResul
  * point of pairing a Computation agent with a Tutor.
  */
 const EXPLAIN_QUERY: Record<string, string> = {
+  explore_graph: "how taxable income is arrived at and why each deduction matters",
+  solve_backwards: "what a deduction is and why there is a ceiling on it",
+  prepare_itr: "what filing a return means and what Form 16 is",
+  compare_investments: "what section 80C covers and why a deduction has a ceiling",
+  generate_invoice: "what GST is and why clients deduct tax from professional fees",
   compare_regimes: "why there are two tax regimes and how to choose between them",
   compute_tax: "what a tax slab is and how income is taxed band by band",
   compute_hra_exemption: "what house rent allowance is and the least of three rule",

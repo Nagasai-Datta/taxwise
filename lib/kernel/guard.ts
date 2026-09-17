@@ -28,6 +28,34 @@ export interface GuardResult {
   ok: boolean;
   offending: string[];
   allowed: string[];
+  /** Why the reply was rejected, when it was not about an invented figure. */
+  reason?: string;
+}
+
+/**
+ * Figures written as words.
+ *
+ * Observed: a model answered "about five hundred fifty thousand seven hundred
+ * eighty one rupees" rather than the figure. Every check above works on
+ * digits, so a spelled-out number walks straight past all of them, and a model
+ * could evade the guard entirely this way. It also reads badly.
+ *
+ * Bare small words are left alone, because "the least of three amounts" and
+ * "one of two regimes" are ordinary prose. What is caught is a numeral
+ * attached to a scale word, which is never ordinary prose in this domain.
+ */
+const NUMBER_WORDS =
+  "zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|" +
+  "fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety";
+const SCALE_WORDS = "hundred|thousand|lakh|lakhs|crore|crores|million|billion";
+
+const SPELLED = new RegExp(
+  `\\b(?:${NUMBER_WORDS})(?:[\\s-]+(?:${NUMBER_WORDS}))*[\\s-]+(?:${SCALE_WORDS})\\b`, "i"
+);
+const SPELLED_POINT = new RegExp(`\\b(?:${NUMBER_WORDS})[\\s-]+point[\\s-]+(?:${NUMBER_WORDS})\\b`, "i");
+
+export function spelledOutNumber(text: string): string | null {
+  return text.match(SPELLED)?.[0] ?? text.match(SPELLED_POINT)?.[0] ?? null;
 }
 
 /** Pull every number out of a string, normalising Indian grouping and rupee signs. */
@@ -87,6 +115,17 @@ export function checkReply(text: string, facts: Record<string, number | string>[
         allowed.add(Math.round(v));
       }
     }
+  }
+
+  // A figure written in words evades every digit-based check below it.
+  const spelled = spelledOutNumber(text);
+  if (spelled) {
+    return {
+      ok: false,
+      offending: [spelled],
+      allowed: [...allowed].map((n) => n.toLocaleString("en-IN")),
+      reason: "a figure was written in words rather than digits, which no check downstream can verify",
+    };
   }
 
   const { text: stripped, resolved } = resolveScales(text);

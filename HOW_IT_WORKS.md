@@ -69,7 +69,7 @@ profiles to `Chat.tsx`. In parallel the browser fetches
 `/api/capabilities?profileId=…` for the middle one.
 
 The middle pane is already filtered by occupation at this point: `groupedFor()`
-in `lib/kernel/capabilities.ts` returns 13 cards for a salaried user and 16 for
+in `lib/kernel/capabilities.ts` returns 17 cards for a salaried user and 16 for
 a freelance professional. A salaried user is never shown GST.
 
 ### Step 1 — the question leaves the browser
@@ -323,11 +323,22 @@ answer. It is not asserted once, it is enforced four times along the path.
 | 1 | Argument schemas | `tools/registry.ts` | A fabricated income reaching a calculation |
 | 2 | Permission check | `tools/execute.ts` | An agent using a capability it should not have |
 | 3 | Facts-only return | `tools/execute.ts` | The model quoting something it was not handed |
-| 4 | The guard | `kernel/guard.ts` | The model writing a figure into its own prose |
+| 4 | The guard | `kernel/guard.ts` | The model writing a figure into its own prose, or spelling one out in words |
+| 5 | Authoritative results | `tools/execute.ts` | The model inverting a verdict while quoting only real figures |
 
 Number 4 catches the case the others cannot: the model is given ₹87,880 and
 ₹3,380 legitimately, adds them itself, and writes ₹91,260. Both inputs were
-real; the sum was supplied by no tool. The guard rejects it.
+real; the sum was supplied by no tool. The guard rejects it. It also catches a
+figure written as words, which would otherwise walk past every digit-based
+check.
+
+Number 5 catches the case number 4 cannot. Given a result saying a target is
+**not** achievable, a model wrote that the user "would need to invest ₹1,50,000
+to bring tax down to ₹40,000". Every figure in that sentence was real. Only the
+claim was false, and a guard that inspects numbers has nothing to object to. So
+a value that is meaningless out of context is no longer given to the model, and
+a tool may mark its result as one whose wording is produced from the figures
+rather than by the model.
 
 ---
 
@@ -368,6 +379,61 @@ render        spending_breakdown, bars by category
 This is the one journey that genuinely needs the database. Without it there are
 no transactions and the answer is empty, while every tax figure still computes.
 
+### "Help me prepare my tax return" — a tool that asks first
+
+```
+route         "return" matched                → computation
+tool          prepare_itr, with no arguments
+              └─ the tool cannot know a Form 16 it has never seen,
+                 so it returns needsInput instead of a result
+component     input_form, rendered inside the conversation
+              fields named after Form 16 Part B, prefilled from the profile
+
+  ── the user fills it in and submits ──
+
+POST          /api/chat { resumeTool: "prepare_itr", values: {...} }
+              routing skipped, the tool is already known
+callTool      same doorway, same permission check, same audit row
+kernel        itr.ts, eight steps, no model at any point
+component     itr_summary, with a download button
+```
+
+**A tool that cannot know something asks rather than guessing.** Until this
+existed a tool either ran or failed. Preparing a return needs figures off a
+document the system has never seen, and inventing them would be worse than
+asking.
+
+The download is a JSON file shaped like an ITR-1, produced on the user's own
+machine. **Nothing is submitted anywhere.** Filing remains something a person
+does on the government portal, with this as their working.
+
+### "How much do I need to invest for my tax to be 40,000?" — backwards
+
+```
+route         "tax" matched                   → computation
+tool          solve_backwards
+              target = totalTax, targetValue = 40000, lever = d80C
+kernel        graph.ts, invertGraph()
+              └─ bisection over the lever's permitted range, 40 iterations
+                 each step calls propagateGraph, which calls computeTax
+component     inverse_result
+```
+
+**Why bisection and not algebra.** The section 87A rebate makes tax a step
+function: it drops to zero in one move rather than tapering. An algebraic
+inverse can return a value on the far side of that cliff without noticing it.
+Bisection converges on the boundary instead.
+
+**Why it sometimes answers "no".** Filling Priya's 80C to its ceiling only
+brings her old-regime tax to ₹67,080. So ₹40,000 is genuinely unreachable by
+that lever, and the honest answer is to say so rather than to present ₹67,080
+as though it were what was asked for.
+
+The sliders in `explore_graph` recompute **in the browser**, by calling
+`propagateGraph` directly. The kernel has no network and no model, which is
+what makes it portable enough to run in either place, and it reads the same
+rulebook either way, so a preview cannot disagree with a committed answer.
+
 ### "Explain this" — the Tutor, called about another answer
 
 ```
@@ -383,6 +449,82 @@ is the bridge from a figure to the idea behind it.
 
 ---
 
+## 6a. The services that nobody asked
+
+Every journey above starts with a question. Three services do not.
+
+```
+browser       every 30 min, or on "check now"
+GET           /api/daemons?profileId=X&since=<last poll>
+              │
+              ├─ complianceObservations()   the dates that apply to this person
+              ├─ monitorObservations()      transactions, turnover, headroom
+              └─ traceObservations()        what has been computed, from audit_log
+              │
+buildReport   sorted: urgent, then attention, then info
+render        grouped by service, each observation optionally carrying a question
+```
+
+**They report, they never act.** Pressing the question on an observation hands
+it to the chat, where it travels the same path as anything typed. Nothing on
+the profile page computes an answer.
+
+**Polling is in the browser, not on a server timer.** A background job that
+outlives a request would be the only part of this system that cannot be
+reproduced by re-running a command, and none of these services needs to do
+anything while nobody is looking.
+
+## 6b. Money moving, and the system noticing
+
+The one journey that starts outside TaxWise.
+
+```
+/gateway      a separate application: its own route, its own look
+              no agents, no kernel, no rulebook
+POST          /api/gateway { action, amount, from, to }
+validate      every problem at once, not the first
+plan          a transfer is TWO entries, never one
+write         both entries and both balances, in ONE database transaction
+              │
+              ▼
+        transactions table          ← the only thing the two applications share
+              │
+              ▼
+/profile      the proactive monitor polls, sees rows newer than its last check
+              "2 new transactions: 25,000 out and 0 in since the last check"
+```
+
+**TaxWise only reads that table.** It has no way to move money, and the gateway
+has no way to reach the kernel. An application that can see a bank without
+touching it is the shape of India's Account Aggregator framework.
+
+**Why both sides in one database transaction.** A transfer that debited one
+account and then failed before crediting the other would be worse than one that
+never happened: money would simply be gone. Either both rows land or neither
+does.
+
+## 6c. Two kinds of fact, kept apart
+
+`compare_investments` is the clearest example of a distinction that runs through
+the whole system.
+
+```
+what the LAW fixes        section, lock-in, treatment on exit
+                          data/investments.json, stated as given
+what it SAVES             re-run the tax engine with that section filled
+                          computable, and it respects the 87A cliff
+what it RETURNS           neither. No figure exists anywhere for this
+```
+
+There is no return column in the component and no rate in the data file. A
+table ranking these by an assumed return would look authoritative and be
+indefensible, which is the exact failure this project exists to avoid.
+
+`generate_invoice` makes a different distinction explicit: GST sits **on top of**
+the fee and is passed on, so it is never income; TDS comes **off** before the
+client pays, so it is not a cost. The amount that actually arrives is neither
+the fee nor the total.
+
 ## 7. When things fail
 
 Every path degrades rather than breaking, and the figures are identical in
@@ -397,6 +539,7 @@ every degraded mode.
 | The model writes an invented figure | Reply discarded, rewritten from facts | Natural wording only |
 | A query embedding takes over 800 ms | Term matching answers instead | Slightly worse ranking on oblique phrasing |
 | Supabase is paused or unreachable | Profiles read from seed files | Transactions, goals, history, memory |
+| The gateway cannot reach the database | The payment is refused outright | Nothing. A payment is never half-recorded |
 | An audit log write fails | Swallowed | The trace for that one call |
 
 The last is deliberate: losing a log line must never cost a user a correct

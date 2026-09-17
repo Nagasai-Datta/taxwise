@@ -24,7 +24,46 @@ export type ComponentKey =
   | "section_list"
   | "capabilities"
   | "guided_start"
+  | "input_form"
+  | "causal_graph"
+  | "inverse_result"
+  | "investment_comparison"
+  | "invoice"
+  | "itr_summary"
   | "none";
+
+/**
+ * A tool that cannot answer yet.
+ *
+ * Until now a tool either ran or failed. Some cannot do either: preparing a
+ * return needs figures off a Form 16 that the system has never seen, and
+ * guessing them would be worse than asking. So a tool may return a request
+ * for input, which the shell renders as a form inside the conversation, and
+ * the tool is called again with the answers.
+ *
+ * The rule still holds. Values typed by a person are not values invented by a
+ * model, and they are validated against the same schema as any other argument.
+ */
+export interface InputField {
+  name: string;
+  label: string;
+  help?: string;
+  type: "number" | "text" | "select";
+  required?: boolean;
+  defaultValue?: string | number;
+  options?: { value: string; label: string }[];
+  /** Fields sharing a group are drawn under one heading. */
+  group?: string;
+}
+
+export interface InputRequest {
+  title: string;
+  description: string;
+  submitLabel: string;
+  /** The tool to call again once the form is filled. */
+  resumeTool: string;
+  fields: InputField[];
+}
 
 export interface ToolContext {
   profileId: string;
@@ -48,6 +87,18 @@ export interface ToolSpec<A extends z.ZodTypeAny = z.ZodTypeAny> {
     data: unknown;
     facts: Record<string, number | string>;
     trace: TraceNode | null;
+    /** Present when the tool needs something before it can answer. */
+    needsInput?: InputRequest | null;
+    /**
+     * Set when the result carries a verdict that a paraphrase could invert.
+     *
+     * The guard checks figures, not claims. A model given "achievable: no"
+     * alongside a required value wrote that the user "would need to invest
+     * 1,50,000 to bring tax down to 40,000", which is false, and every figure
+     * in that sentence had come from a tool. Where the claim matters more than
+     * the numbers, the deterministic phrasing is used instead.
+     */
+    authoritative?: boolean;
   }>;
 }
 
@@ -59,6 +110,8 @@ export interface ToolResult {
   facts: Record<string, number | string>;
   trace: TraceNode | null;
   durationMs: number;
+  needsInput?: InputRequest | null;
+  authoritative?: boolean;
 }
 
 export class ToolPermissionError extends Error {

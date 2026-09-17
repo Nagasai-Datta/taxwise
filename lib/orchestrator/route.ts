@@ -100,7 +100,13 @@ export function seemsLost(message: string): boolean {
 /* ---------------------------------------------------------------- signals */
 
 const MANAGEMENT = /\b(spend|spending|spent|expense|expenses|budget|goals?|net worth|afford|savings? rate|transactions?|balance)\b/;
-const COMPUTATION = /\b(tax|gst|regimes?|deductions?|80c|80d|80ccd|24b|80tta|hra|194j|advance tax|presumptive|44ad|44ada|owe|liability|cess|rebate|slab|form 16|itr)\b/;
+/**
+ * Raising an invoice and choosing where to invest are both computations, and
+ * neither sentence necessarily contains the word tax. Measured: "help me raise
+ * an invoice" and "compare ELSS and PPF" both went to the Tutor, which has no
+ * tool for either and could only talk around them.
+ */
+const COMPUTATION = /\b(tax|gst|regimes?|deductions?|80c|80d|80ccd|24b|80tta|hra|194j|advance tax|presumptive|44ad|44ada|owe|liability|cess|rebate|slab|form 16|itr|invoices?|bill my client|elss|ppf|epf|nps|nsc|invest|investing|investments?)\b/;
 const CONCEPTUAL = /\b(explain|meaning|means|what does|what is a|difference between|why do|why does|how does .* work)\b/;
 const PERSONAL = /\b(my|mine|i|me)\b/;
 const HOW_MUCH = /\bhow (much|many)\b/;
@@ -120,6 +126,18 @@ export function keywordVerdict(message: string): KeywordVerdict {
   // A definitional question about a concept, with no reference to the user's
   // own position, belongs to the Tutor even when it names a tax section.
   // "What is 80C" teaches; "how much 80C do I have left" computes.
+  /**
+   * "What spending would give me a 50 percent savings rate" reads as a money
+   * question and routed to Management, which cannot solve backwards and so
+   * answered that it did not have the figure. Working backwards is a
+   * Computation capability whatever the target happens to be, so the shape of
+   * the question decides, not its subject.
+   */
+  const BACKWARDS = /\b(how much (do|would|should) i need|what .{0,30}would (give|get|make|bring)|in order (for|to) (my|the)|so that my|to (get|reach|bring) my .{0,30}(to|down to|under))\b/;
+  if (BACKWARDS.test(m)) {
+    return { agent: "computation", confident: true, matched: "a question that works backwards from a figure you want" };
+  }
+
   const definitional =
     (/^\s*(what|why) (is|are|does|do)\b/.test(m) || CONCEPTUAL.test(m)) && !personal && !asksHowMuch;
   if (definitional) {

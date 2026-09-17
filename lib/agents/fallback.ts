@@ -20,6 +20,11 @@ export function pickToolsDeterministically(agent: AgentId, message: string): str
   }
 
   if (agent === "computation") {
+    if (/\b(how much (do|would) i need|work backwards|so that my|in order (for|to))\b/.test(m)) return pick("solve_backwards");
+    if (/\b(moves what|explore|graph|sliders?|what affects|knock.?on)\b/.test(m)) return pick("explore_graph");
+    if (/\b(invoice|bill (a |my )?client|raise a bill)\b/.test(m)) return pick("generate_invoice");
+    if (/\b(where should i invest|compare investments?|elss|ppf|nps|which investment)\b/.test(m)) return pick("compare_investments");
+    if (/\b(itr|return|form ?16|file my|prepare my)\b/.test(m)) return pick("prepare_itr");
     if (/regime|old vs new|new vs old|which one|switch/.test(m)) return pick("compare_regimes");
     if (/presumptive|44ad|44ada|books/.test(m)) return pick("presumptive_vs_books");
     if (/gst|goods and services/.test(m)) return pick("compute_gst");

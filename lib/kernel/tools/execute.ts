@@ -56,11 +56,13 @@ export async function callTool(opts: {
   return {
     tool,
     agent,
-    component: spec.component,
-    data: out.data,
+    component: out.needsInput ? "input_form" : spec.component,
+    data: out.needsInput ?? out.data,
     facts: out.facts,
     trace: out.trace,
     durationMs,
+    needsInput: out.needsInput ?? null,
+    authoritative: out.authoritative === true,
   };
 }
 

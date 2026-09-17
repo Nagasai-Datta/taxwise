@@ -4,6 +4,8 @@ import { compareRegimes } from "@/lib/kernel/regimes";
 import { getApplicableDeadlines } from "@/lib/kernel/business";
 import { inr } from "@/lib/kernel/money";
 import MemoryPanel from "@/components/MemoryPanel";
+import Daemons from "@/components/Daemons";
+import DaemonAsk from "@/components/DaemonAsk";
 import ProfilePicker from "@/components/ProfilePicker";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +43,7 @@ export default async function ProfilePage({
         </div>
         <div className="flex items-center gap-3">
           <ProfilePicker profiles={profiles.map((x) => ({ id: x.id, name: x.name, jobTitle: x.jobTitle }))} current={p.id} />
+          <a href="/gateway" className="text-[11px] text-indigo hover:underline">payments</a>
           <a href="/" className="text-[11px] text-indigo hover:underline">back to chat</a>
         </div>
       </div>
@@ -86,6 +89,15 @@ export default async function ProfilePage({
               <Row key={d.id} k={d.label} sub={`applies to ${(d.appliesTo as string[]).join(", ")}`} v={d.date} />
             ))}
           </Section>
+
+          <div>
+            <h2 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-ink/55">
+              Always on
+            </h2>
+            <div className="rounded border border-rule bg-panel/30 p-3">
+              <DaemonAsk profileId={p.id} />
+            </div>
+          </div>
         </div>
 
         <div>

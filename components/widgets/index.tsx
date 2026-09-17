@@ -9,6 +9,12 @@ import GoalProgress from "./GoalProgress";
 import GstSummary from "./GstSummary";
 import ConceptAnswer from "./ConceptAnswer";
 import Capabilities from "./Capabilities";
+import InputForm from "./InputForm";
+import ItrSummary from "./ItrSummary";
+import CausalGraph from "./CausalGraph";
+import InverseResult from "./InverseResult";
+import InvestmentComparison from "./InvestmentComparison";
+import Invoice from "./Invoice";
 import FactCard from "./FactCard";
 import type { ReactElement } from "react";
 import type { TraceNode } from "./TraceTree";
@@ -35,6 +41,11 @@ const RICH: Record<string, (p: { data: any; trace: TraceNode | null }) => ReactE
   goal_progress: GoalProgress,
   gst_summary: GstSummary,
   concept_answer: ({ data }) => <ConceptAnswer data={data} />,
+  itr_summary: ({ data }) => <ItrSummary data={data} />,
+  causal_graph: ({ data }) => <CausalGraph data={data} />,
+  inverse_result: ({ data }) => <InverseResult data={data} />,
+  investment_comparison: ({ data }) => <InvestmentComparison data={data} />,
+  invoice: ({ data }) => <Invoice data={data} />,
 };
 
 const TITLES: Record<string, string> = {
@@ -56,9 +67,16 @@ export function renderWidget(
   data: unknown,
   facts: Record<string, number | string>,
   trace: TraceNode | null,
-  onAsk?: (q: string) => void
+  onAsk?: (q: string) => void,
+  onSubmitInput?: (tool: string, values: Record<string, string | number>) => void,
+  busy?: boolean
 ) {
   if (component === "none") return null;
+  // These two need to send something back into the chat, which no other
+  // component does, so they are handled before the generic lookup.
+  if (component === "input_form") {
+    return <InputForm data={data as never} onSubmit={onSubmitInput} busy={busy} />;
+  }
   // Capabilities needs to send a question back into the chat, which no other
   // component does, so it is handled before the generic lookup.
   if (component === "capabilities") return <Capabilities data={data} onAsk={onAsk} />;

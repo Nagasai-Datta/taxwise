@@ -15,6 +15,10 @@ const GENERIC = [
   // Capabilities is handled ahead of the generic lookup, because it is the one
   // component that sends a question back into the chat.
   "capabilities", "guided_start",
+  // A tool may also ask for what it needs before it can answer.
+  "input_form", "itr_summary",
+  // Forwards and backwards through the causal graph.
+  "causal_graph", "inverse_result",
 ];
 
 describe("component registry covers every tool", () => {

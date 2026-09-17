@@ -149,19 +149,22 @@ describe("the pane differs by user, and overlaps where the tax code overlaps", (
     const shared = [...ids("salaried")].filter((i) => ids("business").has(i) && ids("profession").has(i));
     expect(shared).toContain("compare-regimes");
     expect(shared).toContain("spending");
-    expect(shared.length).toBeGreaterThanOrEqual(11);
+    expect(shared.length).toBeGreaterThanOrEqual(13);
   });
 
-  it("every card composes a question rather than computing anything itself", () => {
+  it("every card composes something a person would type, not a function call", () => {
     for (const c of CAPABILITIES) {
+      // A question, or an imperative a person would actually say.
       expect(c.ask.trim().length).toBeGreaterThan(8);
-      expect(/[?]|^Show /.test(c.ask)).toBe(true);
+      expect(/^[A-Z]/.test(c.ask)).toBe(true);
+      expect(/[_(){}]/.test(c.ask)).toBe(false);
+      expect(c.ask.split(/\s+/).length).toBeGreaterThanOrEqual(3);
     }
   });
 
   it("counts match what the pane will show", () => {
-    expect(capabilitiesFor("salaried")).toHaveLength(13);
-    expect(capabilitiesFor("business")).toHaveLength(15);
-    expect(capabilitiesFor("profession")).toHaveLength(16);
+    expect(capabilitiesFor("salaried")).toHaveLength(16);
+    expect(capabilitiesFor("business")).toHaveLength(17);
+    expect(capabilitiesFor("profession")).toHaveLength(18);
   });
 });

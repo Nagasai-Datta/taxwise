@@ -57,6 +57,11 @@ export const AGENT_REGISTRY: Record<AgentId, AgentSpec> = {
       "presumptive_vs_books",
       "compute_advance_tax",
       "compute_194j_tds",
+      "prepare_itr",
+      "explore_graph",
+      "solve_backwards",
+      "compare_investments",
+      "generate_invoice",
       "get_deadlines",
     ],
     instruction: [

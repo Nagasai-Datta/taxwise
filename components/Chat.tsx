@@ -31,8 +31,12 @@ interface Message {
 
 interface ProfileOption { id: string; name: string; jobTitle: string; occupation: string }
 
-export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
-  const [profileId, setProfileId] = useState(profiles[0]?.id ?? "PRIYA-001");
+export default function Chat({
+  profiles, initialProfileId, initialAsk,
+}: { profiles: ProfileOption[]; initialProfileId?: string; initialAsk?: string }) {
+  const [profileId, setProfileId] = useState(
+    profiles.find((p) => p.id === initialProfileId)?.id ?? profiles[0]?.id ?? "PRIYA-001"
+  );
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -64,6 +68,16 @@ export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
   }, [profileId, loadConversations]);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
+
+  // A question handed over from a service on the profile page. Sent once.
+  const asked = useRef(false);
+  useEffect(() => {
+    if (initialAsk && !asked.current) {
+      asked.current = true;
+      send(initialAsk);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialAsk]);
 
   async function openConversation(id: string) {
     setConversationId(id);
@@ -159,6 +173,46 @@ export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
     }
   }
 
+  /**
+   * A form the assistant asked for, coming back filled in. The tool is called
+   * again with these values, through the same doorway as any other call.
+   */
+  async function submitInput(tool: string, values: Record<string, string | number>) {
+    if (busy) return;
+    const key = Math.random().toString(36).slice(2);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profileId, conversationId, resumeTool: tool, values }),
+      });
+      const j = await res.json();
+      if (j.error) {
+        setMessages((m) => [...m, { id: key, role: "assistant", text: j.error, failed: true }]);
+        return;
+      }
+      setMessages((m) => [...m, {
+        id: key, role: "assistant", text: j.text,
+        agent: j.agent, provider: j.provider,
+        results: j.results ?? [], component: j.component,
+        mode: "interactive",
+        approach: j.approach,
+        route: null, steps: [], guard: j.guard ?? null,
+        suggestions: [], suggestionSource: "fixed",
+      }]);
+      loadConversations(profileId);
+      setPaneKey((k) => k + 1);
+    } catch {
+      setMessages((m) => [...m, {
+        id: key, role: "assistant",
+        text: "The request failed. Is the dev server still running?", failed: true,
+      }]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function explain(id: string) {
     const msg = messages.find((m) => m.id === id);
     const tools = (msg?.results ?? []).map((r) => r.tool);
@@ -190,6 +244,7 @@ export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
         </div>
         <div className="flex items-center gap-2">
           <a href={`/profile?id=${profileId}`} className="text-[10px] text-indigo hover:underline">profile</a>
+          <a href="/gateway" className="text-[10px] text-ink/45 hover:text-ink hover:underline">payments</a>
           <a href="/status" className="text-[10px] text-ink/45 hover:text-ink hover:underline">status</a>
           <select
             value={profileId}
@@ -271,10 +326,10 @@ export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
                           <div className="mt-2">
                             <ModeToggle mode={m.mode ?? "text"} onChange={(mode) => setMode(m.id, mode)} />
                           </div>
-                          {m.mode === "interactive" && (
+                          {(m.mode === "interactive" || m.component === "input_form") && (
                             <div className="mt-2 space-y-2">
                               {m.results.map((r, i) => (
-                                <div key={i}>{renderWidget(r.component, r.data, r.facts, r.trace, send)}</div>
+                                <div key={i}>{renderWidget(r.component, r.data, r.facts, r.trace, send, submitInput, busy)}</div>
                               ))}
                             </div>
                           )}
@@ -312,7 +367,7 @@ export default function Chat({ profiles }: { profiles: ProfileOption[] }) {
                             <>
                               <p className="text-[11.5px] leading-relaxed text-ink/80">{m.explain.text}</p>
                               {m.explain.results.map((r, i) => (
-                                <div key={i} className="mt-2">{renderWidget(r.component, r.data, r.facts, r.trace, send)}</div>
+                                <div key={i} className="mt-2">{renderWidget(r.component, r.data, r.facts, r.trace, send, submitInput, busy)}</div>
                               ))}
                             </>
                           )}

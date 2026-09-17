@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "note": "What the law fixes about each option, and nothing else. There are no return figures anywhere in this file, deliberately: a return is a forecast, not a rule, and this system does not present forecasts as facts. The comparison reports the tax saving, which is computable, alongside the terms, which are statutory.",
+    "verification": {
+      "status": "UNVERIFIED",
+      "verifiedBy": "",
+      "verifiedOn": ""
+    }
+  },
+  "options": [
+    {
+      "id": "epf",
+      "name": "Employees' Provident Fund",
+      "section": "80C",
+      "lockInYears": null,
+      "lockInNote": "Until you leave employment, with limited early withdrawal",
+      "character": "fixed, government declared",
+      "risk": "very low",
+      "taxOnMaturity": "exempt, subject to conditions",
+      "suits": "Already happening if you are salaried. Deducted from your pay before you see it.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "elss",
+      "name": "Equity Linked Savings Scheme",
+      "section": "80C",
+      "lockInYears": 3,
+      "lockInNote": "Three years, the shortest of the 80C options",
+      "character": "equity, market linked",
+      "risk": "high, the value can fall",
+      "taxOnMaturity": "capital gains apply above a threshold",
+      "suits": "Someone with a long horizon who was going to hold equity anyway.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "ppf",
+      "name": "Public Provident Fund",
+      "section": "80C",
+      "lockInYears": 15,
+      "lockInNote": "Fifteen years, with partial withdrawal allowed later",
+      "character": "fixed, government declared",
+      "risk": "very low",
+      "taxOnMaturity": "exempt",
+      "suits": "The part of your savings that should not move with a market.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "nsc",
+      "name": "National Savings Certificate",
+      "section": "80C",
+      "lockInYears": 5,
+      "lockInNote": "Five years",
+      "character": "fixed, government declared",
+      "risk": "very low",
+      "taxOnMaturity": "interest is taxable, though reinvested interest may itself qualify",
+      "suits": "A fixed term with no market exposure.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "tax_saver_fd",
+      "name": "Tax-saving fixed deposit",
+      "section": "80C",
+      "lockInYears": 5,
+      "lockInNote": "Five years, no premature withdrawal",
+      "character": "fixed, bank declared",
+      "risk": "low",
+      "taxOnMaturity": "interest is fully taxable each year",
+      "suits": "Familiar and simple. The taxable interest is what makes it weaker than it looks.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "life_insurance",
+      "name": "Life insurance premium",
+      "section": "80C",
+      "lockInYears": null,
+      "lockInNote": "The policy term, often long",
+      "character": "protection, sometimes with a savings element",
+      "risk": "varies by product",
+      "taxOnMaturity": "exempt subject to premium and sum assured conditions",
+      "suits": "Protection first. A policy bought for the deduction alone usually serves neither purpose well.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "nps_1b",
+      "name": "National Pension System, additional",
+      "section": "80CCD1B",
+      "lockInYears": null,
+      "lockInNote": "Until retirement, with limited exceptions",
+      "character": "market linked, mixed equity and debt",
+      "risk": "moderate",
+      "taxOnMaturity": "partly exempt, part must buy an annuity which is taxable",
+      "suits": "Room over and above the 80C ceiling, for money you will not need before retirement.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    },
+    {
+      "id": "health_insurance",
+      "name": "Health insurance premium",
+      "section": "80D",
+      "lockInYears": null,
+      "lockInNote": "Annual, renewable",
+      "character": "protection",
+      "risk": "none, it is cover rather than an investment",
+      "taxOnMaturity": "not applicable",
+      "suits": "A separate ceiling from 80C, so it does not compete with your investments.",
+      "_source": "Structural facts only: the section, the lock-in and the tax treatment. NOT YET VERIFIED."
+    }
+  ]
+}

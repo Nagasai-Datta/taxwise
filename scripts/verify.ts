@@ -99,7 +99,7 @@ for (const p of allProfiles()) {
     console.log("");
 
     if (p.occupation === "profession") {
-      const t = compute194J(p.income.grossReceiptsAnnual ?? 0);
+      const t = compute194J(p.income.domesticReceipts ?? p.income.grossReceiptsAnnual ?? 0);
       console.log("  SECTION 194J");
       row("Expected TDS by clients", inr(t.expectedTDS));
       row("Actually deducted", inr(p.income.tds194JDeducted ?? 0));

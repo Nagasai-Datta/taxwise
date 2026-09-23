@@ -126,6 +126,7 @@ export function presumptiveVsBooks(args: {
 
   let scheme: string;
   let deemedRate: number;
+  let digitalPart = turnover;
   let ceiling: number;
   let rateBasis: string;
 
@@ -136,13 +137,25 @@ export function presumptiveVsBooks(args: {
     rateBasis = `${pct(deemedRate)} of gross receipts`;
   } else {
     scheme = "44AD";
-    const digital = digitalReceiptShare >= 0.95;
-    deemedRate = digital ? p["44AD"].deemedRateDigital : p["44AD"].deemedRateCash;
+    // Section 44AD(1): the lower rate applies only to the part of turnover
+    // received through banking or electronic channels. Everything else is
+    // deemed at the higher rate. A single rate for the whole turnover
+    // understated profit whenever any receipt was not digital.
+    const share = Math.min(1, Math.max(0, digitalReceiptShare));
+    digitalPart = rupees(turnover * share);
+    const cashPart = turnover - digitalPart;
+    const rD = p["44AD"].deemedRateDigital;
+    const rC = p["44AD"].deemedRateCash;
+    deemedRate = turnover > 0 ? (digitalPart * rD + cashPart * rC) / turnover : rD;
     ceiling = p["44AD"].turnoverCeiling;
-    rateBasis = `${pct(deemedRate)} of turnover (${digital ? "receipts are almost entirely digital" : "some receipts are in cash"})`;
+    rateBasis = cashPart > 0
+      ? `${pct(rD)} of ${inr(digitalPart)} received digitally, plus ${pct(rC)} of ${inr(cashPart)} received otherwise`
+      : `${pct(rD)} of turnover, all of it received digitally`;
   }
 
-  const deemedProfit = rupees(turnover * deemedRate);
+  const deemedProfit = scheme === "44AD"
+    ? rupees(digitalPart * p["44AD"].deemedRateDigital) + rupees((turnover - digitalPart) * p["44AD"].deemedRateCash)
+    : rupees(turnover * deemedRate);
   const eligible = turnover <= ceiling;
 
   const options: PresumptiveOption[] = [

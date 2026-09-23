@@ -333,13 +333,18 @@ export const TOOLS: Record<string, ToolSpec> = {
           trace: null,
         };
       }
-      const receipts = p.income.grossReceiptsAnnual ?? 0;
+      // Section 194J obliges a payer in India. A client overseas deducts
+      // nothing, so only domestic receipts are subject to it. Taking the rate
+      // on gross receipts invented a shortfall for anyone with export income.
+      const gross = p.income.grossReceiptsAnnual ?? 0;
+      const receipts = p.income.domesticReceipts ?? gross;
       const t = compute194J(receipts);
       const actual = p.income.tds194JDeducted ?? 0;
       return {
-        data: { applicable: true, ...t, actuallyDeducted: actual, grossReceipts: receipts, shortfall: t.expectedTDS - actual },
+        data: { applicable: true, ...t, actuallyDeducted: actual, grossReceipts: gross, domesticReceipts: receipts, shortfall: t.expectedTDS - actual },
         facts: {
-          grossReceipts: receipts,
+          grossReceipts: gross,
+          domesticReceipts: receipts,
           expectedTDS: t.expectedTDS,
           actuallyDeducted: actual,
           shortfall: t.expectedTDS - actual,

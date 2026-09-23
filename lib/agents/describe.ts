@@ -62,11 +62,15 @@ function describeOne(r: ToolResult): string {
         ? `Advance tax is due on a liability of ${inr(n(f, "totalLiability"))}, payable across ${f.instalmentCount} instalment${f.instalmentCount === 1 ? "" : "s"}.`
         : `No advance tax is due, because the liability of ${inr(n(f, "totalLiability"))} is at or below the threshold.`;
 
-    case "compute_194j_tds":
-      return f.applicable === "no"
-        ? "Section 194J applies to professional fees, which does not apply here."
-        : `On receipts of ${inr(n(f, "grossReceipts"))}, clients should have deducted ${inr(n(f, "expectedTDS"))} under section 194J. `
-          + `${inr(n(f, "actuallyDeducted"))} was actually deducted, leaving ${inr(n(f, "shortfall"))} unaccounted for.`;
+    case "compute_194j_tds": {
+      if (f.applicable === "no") return "Section 194J applies to professional fees, which does not apply here.";
+      const short = n(f, "shortfall");
+      return `Only clients in India deduct tax under section 194J. On ${inr(n(f, "domesticReceipts"))} from Indian clients, `
+        + `${inr(n(f, "expectedTDS"))} should have been deducted and ${inr(n(f, "actuallyDeducted"))} was. `
+        + (short > 0 ? `Clients deducted ${inr(short)} less than expected.`
+          : short < 0 ? `That is ${inr(-short)} more than expected, which comes back when you file.`
+          : "The two match, so nothing is missing.");
+    }
 
     case "compute_net_worth":
       return `Across ${f.accountCount} account${f.accountCount === 1 ? "" : "s"}, your balances total ${inr(n(f, "netWorth"))}.`;

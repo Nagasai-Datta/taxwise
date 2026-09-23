@@ -1,0 +1,545 @@
+{
+  "_readme": [
+    "Thirty questions, ten per profile, each with one headline answer.",
+    "expected is the correct answer worked out independently of the platform: income tax figures by hand from the FY 2025-26 rules and to be confirmed on the Income Tax Department's online calculator; GST, presumptive, TDS and advance tax figures by hand from the Act.",
+    "Before running the evaluation, a team member checks each line, writes their name in checkedBy and how they checked it in checkedHow. Do not fill these in for a line you have not actually checked.",
+    "kind is one of: amount (a rupee figure), zero (the answer is no tax), yes, no, unreachable (the target cannot be reached).",
+    "tool and args say which kernel tool answers the question. They are used only by the guard stress test, never shown to the model.",
+    "answerFacts names the tool output that holds the answer. The platform is marked right only if that output equals expected and the reply states it, so a reply that quotes the right number for the wrong reason is not counted."
+  ],
+  "questions": [
+    {
+      "id": "P01",
+      "profile": "PRIYA-001",
+      "question": "Which tax regime is better for me, and how much would I save by choosing it?",
+      "kind": "amount",
+      "expected": 87880,
+      "working": "New regime tax 0, old regime tax 87,880, so the new regime saves 87,880.",
+      "checkWith": "official calculator, both regimes",
+      "tool": "compare_regimes",
+      "args": {},
+      "answerFacts": [
+        "saving"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P02",
+      "profile": "PRIYA-001",
+      "question": "How much income tax will I pay under the new regime?",
+      "kind": "zero",
+      "expected": 0,
+      "working": "Taxable 12,00,000 - 75,000 = 11,25,000. Slab tax 20,000 + 32,500 = 52,500. Taxable income is within 12,00,000 so the 87A rebate cancels all of it. Tax 0.",
+      "checkWith": "official calculator, new regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "new"
+      },
+      "answerFacts": [
+        "totalTax",
+        "newRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P03",
+      "profile": "PRIYA-001",
+      "question": "What will my total tax be under the old regime?",
+      "kind": "amount",
+      "expected": 87880,
+      "working": "Taxable 8,60,000. Slab tax 12,500 + 72,000 = 84,500. No 87A (above 5,00,000). Cess 4% = 3,380. Total 87,880.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "totalTax",
+        "oldRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P04",
+      "profile": "PRIYA-001",
+      "question": "What is my taxable income under the old regime?",
+      "kind": "amount",
+      "expected": 860000,
+      "working": "12,00,000 - 50,000 standard deduction - 2,40,000 HRA exemption - 50,000 under 80C = 8,60,000.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "taxableIncome",
+        "oldRegimeTaxableIncome"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P05",
+      "profile": "PRIYA-001",
+      "question": "What is my taxable income under the new regime?",
+      "kind": "amount",
+      "expected": 1125000,
+      "working": "12,00,000 - 75,000 standard deduction = 11,25,000.",
+      "checkWith": "official calculator, new regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "new"
+      },
+      "answerFacts": [
+        "taxableIncome",
+        "newRegimeTaxableIncome"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P06",
+      "profile": "PRIYA-001",
+      "question": "How much of my house rent allowance is exempt from tax?",
+      "kind": "amount",
+      "expected": 240000,
+      "working": "Least of: HRA received 3,00,000; 40% of basic 6,00,000 = 2,40,000 (Bengaluru, non-metro); rent 3,00,000 - 10% of basic 60,000 = 2,40,000. Exempt 2,40,000.",
+      "checkWith": "by hand, section 10(13A) and rule 2A",
+      "tool": "compute_hra_exemption",
+      "args": {},
+      "answerFacts": [
+        "exemption"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P07",
+      "profile": "PRIYA-001",
+      "question": "How much cess will I pay under the old regime?",
+      "kind": "amount",
+      "expected": 3380,
+      "working": "4% of 84,500 = 3,380.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "cess"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P08",
+      "profile": "PRIYA-001",
+      "question": "If my total 80C investment becomes Rs 1,50,000, what will my old-regime tax be?",
+      "kind": "amount",
+      "expected": 67080,
+      "working": "Taxable 12,00,000 - 50,000 - 2,40,000 - 1,50,000 = 7,60,000. Slab tax 12,500 + 52,000 = 64,500. Cess 2,580. Total 67,080.",
+      "checkWith": "official calculator, old regime with 80C 1,50,000",
+      "tool": "what_if_deduction",
+      "args": {
+        "section": "80C",
+        "amount": 150000
+      },
+      "answerFacts": [
+        "taxAfter"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P09",
+      "profile": "PRIYA-001",
+      "question": "If I invest another Rs 50,000 under 80C, how much tax will I save under the old regime?",
+      "kind": "amount",
+      "expected": 10400,
+      "working": "80C goes from 50,000 to 1,00,000. Taxable 8,10,000. Slab tax 12,500 + 62,000 = 74,500, cess 2,980, total 77,480. Saving 87,880 - 77,480 = 10,400.",
+      "checkWith": "official calculator, old regime with 80C 1,00,000",
+      "tool": "what_if_deduction",
+      "args": {
+        "section": "80C",
+        "amount": 100000
+      },
+      "answerFacts": [
+        "saving"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "P10",
+      "profile": "PRIYA-001",
+      "question": "How much do I need to invest under 80C for my old-regime tax to come down to Rs 40,000?",
+      "kind": "unreachable",
+      "expected": null,
+      "working": "80C is capped at 1,50,000. At the cap the old-regime tax is 67,080 (see P08), which is above 40,000, so the target cannot be reached through 80C.",
+      "checkWith": "follows from P08",
+      "tool": "solve_backwards",
+      "args": {
+        "target": "totalTax",
+        "targetValue": 40000,
+        "lever": "d80C",
+        "regime": "old"
+      },
+      "answerFacts": [
+        "achievable"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A01",
+      "profile": "ARJUN-002",
+      "question": "Keeping regular books, which tax regime is better for me and by how much?",
+      "kind": "amount",
+      "expected": 124800,
+      "working": "Profit from books 24,00,000 - 9,00,000 = 15,00,000. New regime 1,09,200, old regime 2,34,000. Difference 1,24,800.",
+      "checkWith": "official calculator, both regimes, business income 15,00,000",
+      "tool": "compare_regimes",
+      "args": {},
+      "answerFacts": [
+        "saving"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A02",
+      "profile": "ARJUN-002",
+      "question": "Keeping regular books, what is my income tax under the new regime?",
+      "kind": "amount",
+      "expected": 109200,
+      "working": "Taxable 15,00,000 (no standard deduction on business income). Slab tax 20,000 + 40,000 + 45,000 = 1,05,000. Cess 4,200. Total 1,09,200.",
+      "checkWith": "official calculator, new regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "new"
+      },
+      "answerFacts": [
+        "totalTax",
+        "newRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A03",
+      "profile": "ARJUN-002",
+      "question": "Keeping regular books, what is my income tax under the old regime?",
+      "kind": "amount",
+      "expected": 234000,
+      "working": "Taxable 15,00,000 - 1,00,000 (80C) - 25,000 (80D) = 13,75,000. Slab tax 12,500 + 1,00,000 + 1,12,500 = 2,25,000. Cess 9,000. Total 2,34,000.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "totalTax",
+        "oldRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A04",
+      "profile": "ARJUN-002",
+      "question": "How much GST do I charge on my sales in a year?",
+      "kind": "amount",
+      "expected": 432000,
+      "working": "18% of turnover 24,00,000 = 4,32,000.",
+      "checkWith": "by hand, 18% rate for the service",
+      "tool": "compute_gst",
+      "args": {},
+      "answerFacts": [
+        "outputGST"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A05",
+      "profile": "ARJUN-002",
+      "question": "How much GST do I have to pay after input tax credit?",
+      "kind": "amount",
+      "expected": 340000,
+      "working": "4,32,000 charged - 92,000 input credit = 3,40,000.",
+      "checkWith": "by hand",
+      "tool": "compute_gst",
+      "args": {},
+      "answerFacts": [
+        "netGSTPayable"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A06",
+      "profile": "ARJUN-002",
+      "question": "Do I need to register for GST?",
+      "kind": "yes",
+      "expected": null,
+      "working": "Aggregate turnover 24,00,000 is above the 20,00,000 threshold for services, so registration is compulsory.",
+      "checkWith": "by hand, section 22 of the CGST Act",
+      "tool": "compute_gst",
+      "args": {},
+      "answerFacts": [
+        "registrationRequired"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A07",
+      "profile": "ARJUN-002",
+      "question": "Under section 44AD, how much profit would I declare?",
+      "kind": "amount",
+      "expected": 146400,
+      "working": "6% on receipts through banking channels: 6% of 22,80,000 = 1,36,800. 8% on the rest: 8% of 1,20,000 = 9,600. Total 1,46,400.",
+      "checkWith": "by hand, section 44AD(1)",
+      "tool": "presumptive_vs_books",
+      "args": {},
+      "answerFacts": [
+        "presumptiveProfit"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A08",
+      "profile": "ARJUN-002",
+      "question": "Keeping regular books and using the new regime, how much advance tax must I have paid in total by 15 September?",
+      "kind": "amount",
+      "expected": 49140,
+      "working": "Liability 1,09,200. By 15 September, 45% cumulatively = 49,140.",
+      "checkWith": "by hand, section 211",
+      "tool": "compute_advance_tax",
+      "args": {
+        "underPresumptiveScheme": false
+      },
+      "answerFacts": [
+        "due_15_Sep"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A09",
+      "profile": "ARJUN-002",
+      "question": "Keeping regular books, what is my taxable income under the old regime?",
+      "kind": "amount",
+      "expected": 1375000,
+      "working": "15,00,000 - 1,00,000 - 25,000 = 13,75,000.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "taxableIncome",
+        "oldRegimeTaxableIncome"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "A10",
+      "profile": "ARJUN-002",
+      "question": "If my total 80C investment becomes Rs 1,50,000, what will my old-regime tax be?",
+      "kind": "amount",
+      "expected": 218400,
+      "working": "Taxable 15,00,000 - 1,50,000 - 25,000 = 13,25,000. Slab tax 12,500 + 1,00,000 + 97,500 = 2,10,000. Cess 8,400. Total 2,18,400.",
+      "checkWith": "official calculator, old regime with 80C 1,50,000",
+      "tool": "what_if_deduction",
+      "args": {
+        "section": "80C",
+        "amount": 150000
+      },
+      "answerFacts": [
+        "taxAfter"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R01",
+      "profile": "ROHAN-003",
+      "question": "Keeping regular books, which tax regime is better for me and by how much?",
+      "kind": "amount",
+      "expected": 129480,
+      "working": "Profit from books 18,00,000 - 4,00,000 = 14,00,000. New regime 93,600, old regime 2,23,080. Difference 1,29,480.",
+      "checkWith": "official calculator, both regimes, professional income 14,00,000",
+      "tool": "compare_regimes",
+      "args": {},
+      "answerFacts": [
+        "saving"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R02",
+      "profile": "ROHAN-003",
+      "question": "Keeping regular books, what is my income tax under the new regime?",
+      "kind": "amount",
+      "expected": 93600,
+      "working": "Taxable 14,00,000. Slab tax 20,000 + 40,000 + 30,000 = 90,000. Cess 3,600. Total 93,600.",
+      "checkWith": "official calculator, new regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "new"
+      },
+      "answerFacts": [
+        "totalTax",
+        "newRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R03",
+      "profile": "ROHAN-003",
+      "question": "Keeping regular books, what is my income tax under the old regime?",
+      "kind": "amount",
+      "expected": 223080,
+      "working": "Taxable 14,00,000 - 60,000 = 13,40,000. Slab tax 12,500 + 1,00,000 + 1,02,000 = 2,14,500. Cess 8,580. Total 2,23,080.",
+      "checkWith": "official calculator, old regime",
+      "tool": "compute_tax",
+      "args": {
+        "regime": "old"
+      },
+      "answerFacts": [
+        "totalTax",
+        "oldRegimeTax"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R04",
+      "profile": "ROHAN-003",
+      "question": "How far am I from the GST registration threshold?",
+      "kind": "amount",
+      "expected": 200000,
+      "working": "Aggregate turnover includes export receipts: 18,00,000. Threshold 20,00,000. Headroom 2,00,000.",
+      "checkWith": "by hand, section 2(6) and section 22 of the CGST Act",
+      "tool": "compute_gst",
+      "args": {},
+      "answerFacts": [
+        "headroomToThreshold"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R05",
+      "profile": "ROHAN-003",
+      "question": "Do I need to register for GST right now?",
+      "kind": "no",
+      "expected": null,
+      "working": "Aggregate turnover 18,00,000 is below the 20,00,000 threshold.",
+      "checkWith": "by hand, section 22 of the CGST Act",
+      "tool": "compute_gst",
+      "args": {},
+      "answerFacts": [
+        "registrationRequired"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R06",
+      "profile": "ROHAN-003",
+      "question": "Under section 44ADA, how much profit would I declare?",
+      "kind": "amount",
+      "expected": 900000,
+      "working": "50% of gross receipts 18,00,000 = 9,00,000.",
+      "checkWith": "by hand, section 44ADA(1)",
+      "tool": "presumptive_vs_books",
+      "args": {},
+      "answerFacts": [
+        "presumptiveProfit"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R07",
+      "profile": "ROHAN-003",
+      "question": "How much TDS should my clients have deducted under section 194J?",
+      "kind": "amount",
+      "expected": 80000,
+      "working": "Only Indian clients deduct TDS under 194J. 10% of 8,00,000 domestic receipts = 80,000. Overseas clients (10,00,000) deduct none.",
+      "checkWith": "by hand, section 194J",
+      "tool": "compute_194j_tds",
+      "args": {},
+      "answerFacts": [
+        "expectedTDS"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R08",
+      "profile": "ROHAN-003",
+      "question": "Keeping regular books and using the new regime, how much advance tax must I have paid in total by 15 December?",
+      "kind": "amount",
+      "expected": 70200,
+      "working": "Liability 93,600. By 15 December, 75% cumulatively = 70,200.",
+      "checkWith": "by hand, section 211",
+      "tool": "compute_advance_tax",
+      "args": {
+        "underPresumptiveScheme": false
+      },
+      "answerFacts": [
+        "due_15_Dec"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R09",
+      "profile": "ROHAN-003",
+      "question": "If my total 80C investment becomes Rs 1,50,000, what will my old-regime tax be?",
+      "kind": "amount",
+      "expected": 195000,
+      "working": "Taxable 14,00,000 - 1,50,000 = 12,50,000. Slab tax 12,500 + 1,00,000 + 75,000 = 1,87,500. Cess 7,500. Total 1,95,000.",
+      "checkWith": "official calculator, old regime with 80C 1,50,000",
+      "tool": "what_if_deduction",
+      "args": {
+        "section": "80C",
+        "amount": 150000
+      },
+      "answerFacts": [
+        "taxAfter"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    },
+    {
+      "id": "R10",
+      "profile": "ROHAN-003",
+      "question": "If I invest another Rs 40,000 under 80C, how much tax would I save under the old regime?",
+      "kind": "amount",
+      "expected": 12480,
+      "working": "80C goes from 60,000 to 1,00,000. Taxable 13,00,000. Slab tax 12,500 + 1,00,000 + 90,000 = 2,02,500, cess 8,100, total 2,10,600. Saving 2,23,080 - 2,10,600 = 12,480.",
+      "checkWith": "official calculator, old regime with 80C 1,00,000",
+      "tool": "what_if_deduction",
+      "args": {
+        "section": "80C",
+        "amount": 100000
+      },
+      "answerFacts": [
+        "saving"
+      ],
+      "checkedBy": "",
+      "checkedHow": ""
+    }
+  ]
+}

@@ -475,7 +475,7 @@ slab table and the 87A rebate at once, so a bug in any one changes the answer.
 | Digital receipts | 95%, so 44AD applies at the lower rate |
 | City | Mumbai, metro |
 
-Section 44AD deems **₹1,44,000** against **₹15,00,000** from books. GST registration **required**,
+Section 44AD deems **₹1,46,400** against **₹15,00,000** from books. GST registration **required**,
 turnover being above the threshold.
 
 ### Rohan, 26, freelance designer, Pune — professional
@@ -487,7 +487,7 @@ turnover being above the threshold.
 | TDS deducted by clients | ₹80,000 |
 
 Section 44ADA deems **₹9,00,000** against ₹14,00,000 from books. **₹2,00,000 of headroom** below
-the GST threshold, because exports are zero-rated. Section 194J expected ₹1,80,000 against
+the GST threshold, because exports are zero-rated. Section 194J expected ₹80,000 on domestic receipts, matching the
 ₹80,000 actually deducted.
 
 **Two corrections are recorded in `profiles.json` under `_meta.assumptions`:** salary breakups

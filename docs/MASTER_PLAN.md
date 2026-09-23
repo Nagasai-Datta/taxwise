@@ -450,7 +450,7 @@ These are test fixtures rather than personas. Each exercises a part of the tax c
 | Already claimed | ₹1,00,000 under 80C, ₹25,000 under 80D |
 | Banks | ICICI personal ₹4,50,000; ICICI current ₹6,20,000 |
 
-**Presumptive taxation, 44AD:** declared profit ₹1,44,000 (6 percent, because receipts are digital) against ₹15,00,000 from regular books. **GST:** ₹4,32,000 charged, ₹92,000 input credit, ₹3,40,000 payable; registration **required**, turnover being above ₹20,00,000. **Advance tax:** ₹1,09,200 across four instalments.
+**Presumptive taxation, 44AD:** declared profit ₹1,46,400 (6 percent on the 95 percent received digitally, 8 percent on the rest) against ₹15,00,000 from regular books. **GST:** ₹4,32,000 charged, ₹92,000 input credit, ₹3,40,000 payable; registration **required**, turnover being above ₹20,00,000. **Advance tax:** ₹1,09,200 across four instalments.
 
 ### 11.3 Rohan, 26, freelance designer, Pune (professional)
 
@@ -463,7 +463,7 @@ These are test fixtures rather than personas. Each exercises a part of the tax c
 | Already claimed | ₹60,000 under 80C |
 | Banks | Axis personal ₹1,80,000; Axis current ₹3,20,000 |
 
-**Presumptive taxation, 44ADA:** declared profit ₹9,00,000 (50 percent of receipts) against ₹14,00,000 from books. **GST:** overseas work is zero-rated, so GST applies to ₹8,00,000; net payable ₹1,03,000; **₹2,00,000 of headroom** before registration becomes compulsory. **Section 194J:** ₹1,80,000 expected against ₹80,000 actually deducted. **An invoice for ₹2,00,000:** to an Indian client, GST ₹36,000 and TDS ₹20,000, so ₹2,16,000 arrives; to an overseas client, no GST and no TDS, so ₹2,00,000 arrives.
+**Presumptive taxation, 44ADA:** declared profit ₹9,00,000 (50 percent of receipts) against ₹14,00,000 from books. **GST:** overseas work is zero-rated, so GST applies to ₹8,00,000; net payable ₹1,03,000; **₹2,00,000 of headroom** before registration becomes compulsory. **Section 194J:** only Indian clients deduct, so ₹80,000 is expected on ₹8,00,000 of domestic receipts, matching the ₹80,000 actually deducted. **An invoice for ₹2,00,000:** to an Indian client, GST ₹36,000 and TDS ₹20,000, so ₹2,16,000 arrives; to an overseas client, no GST and no TDS, so ₹2,00,000 arrives.
 
 ### 11.4 Stated assumptions
 

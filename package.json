@@ -22,7 +22,10 @@
     "corpus:embed": "tsx scripts/corpus.ts",
     "corpus:check": "tsx scripts/corpus.ts --check",
     "bench": "tsx scripts/bench.ts",
-    "daemons": "tsx scripts/daemons.ts"
+    "daemons": "tsx scripts/daemons.ts",
+    "eval": "tsx eval/run-eval.ts",
+    "eval:guard": "tsx eval/guard-stress.ts",
+    "eval:summary": "tsx eval/summarise.ts"
   },
   "dependencies": {
     "next": "16.3.4",

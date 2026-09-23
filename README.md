@@ -8,6 +8,8 @@ BCSE497J Project-I · School of Computer Science and Engineering · Vellore Inst
 For the journey of one question from keystroke to rendered card, with the file responsible at
 every step, read [HOW_IT_WORKS.md](HOW_IT_WORKS.md).
 
+The complete description of the project, including its evidence, limitations and what a paper can claim, is [docs/MASTER_PLAN.md](docs/MASTER_PLAN.md).
+
 M Naga Sai Dattu (23BCE0757) · Tanishq Daga (23BCE2119) · Devesh Atul Mahajan (23BCE0801)
 Guide: Dr. Kalaavathi B
 

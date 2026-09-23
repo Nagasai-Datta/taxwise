@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { orchestrate } from "@/lib/orchestrator";
 import { createConversation, appendMessage, touchConversation } from "@/lib/db/repositories";
 import { explainQueryFor } from "@/lib/agents/approach";
-import { callTool } from "@/lib/kernel/tools/execute";
+import { callTool, userInputArgument } from "@/lib/kernel/tools/execute";
 import { agentsFor } from "@/lib/kernel/agents";
 import { describeResult } from "@/lib/agents/describe";
 import { describeApproach } from "@/lib/agents/approach";
@@ -58,9 +58,15 @@ export async function POST(req: Request) {
       const agent = agentsFor(tool)[0];
       if (!agent) return NextResponse.json({ error: `No agent may call ${tool}` }, { status: 400 });
 
+      // Each tool names its own form argument: form16 for a return, invoice
+      // for an invoice. Sending everything as form16 made the invoice form
+      // reappear on submit instead of producing an invoice.
+      const argName = userInputArgument(tool);
+      if (!argName) return NextResponse.json({ error: `${tool} does not take a form` }, { status: 400 });
+
       const r = await callTool({
         agent, tool,
-        args: { form16: body.values ?? {} },
+        args: { [argName]: body.values ?? {} },
         ctx: { profileId },
       });
 

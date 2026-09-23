@@ -16,7 +16,12 @@ export type AgentId = "tutor" | "computation" | "management";
 export interface AgentSpec {
   id: AgentId;
   name: string;
-  /** Which provider serves this agent. Wired up in Phase 5. */
+  /**
+   * The first provider this agent tries. Display only: the real order, with
+   * its fallbacks, lives in lib/agents/providers.ts and can be overridden per
+   * agent with AGENT_<NAME>_PROVIDER. Groq leads for three agents because it
+   * was measured at about 1.4 s with a tool call, against about 29 s for Gemini.
+   */
   provider: string;
   /** One line the orchestrator uses when deciding where a request belongs. */
   handles: string;
@@ -30,7 +35,7 @@ export const AGENT_REGISTRY: Record<AgentId, AgentSpec> = {
   tutor: {
     id: "tutor",
     name: "Tutor",
-    provider: "gemini",
+    provider: "groq",
     handles: "questions about what something means, why a rule exists, or how a concept works",
     tools: ["search_concepts", "list_deduction_sections", "list_capabilities"],
     instruction: [

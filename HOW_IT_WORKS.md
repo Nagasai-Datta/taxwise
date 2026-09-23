@@ -320,7 +320,7 @@ answer. It is not asserted once, it is enforced four times along the path.
 
 | # | Where | File | What it stops |
 |---|---|---|---|
-| 1 | Argument schemas | `tools/registry.ts` | A fabricated income reaching a calculation |
+| 1 | Argument schemas | `tools/registry.ts` | A fabricated income reaching a calculation. Figures on a Form 16 or an invoice come only from the form the person fills in; the model is shown those tools without that argument |
 | 2 | Permission check | `tools/execute.ts` | An agent using a capability it should not have |
 | 3 | Facts-only return | `tools/execute.ts` | The model quoting something it was not handed |
 | 4 | The guard | `kernel/guard.ts` | The model writing a figure into its own prose, or spelling one out in words |

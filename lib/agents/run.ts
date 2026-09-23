@@ -4,7 +4,7 @@ import { modelFor, timeoutSignal, optionsFor, MODEL_TIMEOUT_MS } from "./provide
 import { systemPrompt } from "./prompts";
 import { AGENT_REGISTRY, type AgentId } from "../kernel/agents";
 import { TOOLS } from "../kernel/tools/registry";
-import { callTool } from "../kernel/tools/execute";
+import { callTool, userInputArgument } from "../kernel/tools/execute";
 import { checkReply, normaliseNumbers } from "../kernel/guard";
 import { resolveFollowUps, type FollowUp } from "./followups";
 import { applyTurn, asPromptContext, type Note, type NoteKind, type Dossier } from "../kernel/memory";
@@ -131,10 +131,23 @@ export async function runAgent(opts: {
   for (const name of permitted) {
     const spec = TOOLS[name];
     if (!spec) continue;
+    /**
+     * Figures on a Form 16 or an invoice are typed by the person into a form.
+     * The model is shown each such tool without that argument, so the only
+     * thing it can do is ask for the form. Anything it sends there anyway is
+     * dropped before the call.
+     */
+    const personOnly = userInputArgument(name);
+    const modelSchema = personOnly
+      ? (spec.inputSchema as unknown as z.AnyZodObject).omit({ [personOnly]: true } as never)
+      : spec.inputSchema;
+
     sdkTools[name] = tool({
       description: spec.description,
-      inputSchema: spec.inputSchema as z.ZodTypeAny,
-      execute: async (args: Record<string, unknown>) => {
+      inputSchema: modelSchema as z.ZodTypeAny,
+      execute: async (rawArgs: Record<string, unknown>) => {
+        const args = { ...(rawArgs ?? {}) };
+        if (personOnly) delete args[personOnly];
         // A model will sometimes call the same tool twice with identical
         // arguments in one turn. The kernel is deterministic, so the second
         // call cannot return anything new; serving it from cache saves the

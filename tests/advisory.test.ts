@@ -219,3 +219,39 @@ describe("failures observed in live runs", () => {
     expect(r.facts.amountYouShouldReceive).toBe(216000);
   });
 });
+
+describe("figures on a form come from the person, never the model", () => {
+  it("knows which argument of each form tool carries the person's figures", async () => {
+    const { userInputArgument } = await import("@/lib/kernel/tools/execute");
+    expect(userInputArgument("prepare_itr")).toBe("form16");
+    expect(userInputArgument("generate_invoice")).toBe("invoice");
+    // Ordinary tools take only choices, so they have none.
+    expect(userInputArgument("compute_tax")).toBeNull();
+    expect(userInputArgument("solve_backwards")).toBeNull();
+  });
+
+  it("a submitted invoice form produces an invoice, not the form again", async () => {
+    const { callTool, userInputArgument } = await import("@/lib/kernel/tools/execute");
+    // Observed: the resume path sent every form as form16, so the invoice
+    // tool never saw its values and simply asked again.
+    const arg = userInputArgument("generate_invoice")!;
+    const r = await callTool({
+      agent: "computation", tool: "generate_invoice",
+      args: { [arg]: { invoiceNumber: "R-9", clientName: "C", description: "W",
+                       amount: 100000, isExport: "no", chargeGST: "yes" } },
+      ctx: { profileId: "ROHAN-003" },
+    });
+    expect(r.needsInput ?? null).toBeNull();
+    expect(r.facts.fee).toBe(100000);
+  });
+
+  it("the old behaviour really did loop, which is why this matters", async () => {
+    const { callTool } = await import("@/lib/kernel/tools/execute");
+    const r = await callTool({
+      agent: "computation", tool: "generate_invoice",
+      args: { form16: { amount: 100000 } } as never,
+      ctx: { profileId: "ROHAN-003" },
+    });
+    expect(r.needsInput).not.toBeNull();
+  });
+});

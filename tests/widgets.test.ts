@@ -19,6 +19,8 @@ const GENERIC = [
   "input_form", "itr_summary",
   // Forwards and backwards through the causal graph.
   "causal_graph", "inverse_result",
+  // Raising an invoice and comparing where to invest.
+  "invoice", "investment_comparison",
 ];
 
 describe("component registry covers every tool", () => {

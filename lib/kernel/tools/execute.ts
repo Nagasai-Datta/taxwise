@@ -72,3 +72,25 @@ export function toolsVisibleTo(agent: AgentId) {
     .filter((t) => mayCall(agent, t.name))
     .map((t) => ({ name: t.name, description: t.description, component: t.component }));
 }
+
+/**
+ * The argument through which a person, not a model, supplies figures.
+ *
+ * Two tools take a whole record of values: prepare_itr (Form 16 figures) and
+ * generate_invoice (the fee and client details). Those values must come from
+ * the form the person fills in, never from the model, or the model could
+ * invent a salary on a Form 16 and the first enforcement point would be
+ * bypassed. This finds that argument from the tool's own schema, so the
+ * resume path and the model-facing schema agree without a hand-kept list.
+ */
+export function userInputArgument(toolName: string): string | null {
+  const spec = TOOLS[toolName];
+  const shape = (spec?.inputSchema as unknown as { shape?: Record<string, { _def?: { typeName?: string; innerType?: { _def?: { typeName?: string } } } }> })?.shape;
+  if (!shape) return null;
+  for (const [key, field] of Object.entries(shape)) {
+    const def = field?._def;
+    const inner = def?.typeName === "ZodOptional" ? def.innerType?._def : def;
+    if (inner?.typeName === "ZodRecord") return key;
+  }
+  return null;
+}

@@ -163,8 +163,8 @@ describe("the pane differs by user, and overlaps where the tax code overlaps", (
   });
 
   it("counts match what the pane will show", () => {
-    expect(capabilitiesFor("salaried")).toHaveLength(16);
-    expect(capabilitiesFor("business")).toHaveLength(17);
-    expect(capabilitiesFor("profession")).toHaveLength(18);
+    expect(capabilitiesFor("salaried")).toHaveLength(17);
+    expect(capabilitiesFor("business")).toHaveLength(19);
+    expect(capabilitiesFor("profession")).toHaveLength(20);
   });
 });

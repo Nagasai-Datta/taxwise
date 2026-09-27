@@ -21,8 +21,8 @@
       "answerFacts": [
         "saving"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P02",
@@ -40,8 +40,8 @@
         "totalTax",
         "newRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P03",
@@ -59,8 +59,8 @@
         "totalTax",
         "oldRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P04",
@@ -78,8 +78,8 @@
         "taxableIncome",
         "oldRegimeTaxableIncome"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P05",
@@ -97,8 +97,8 @@
         "taxableIncome",
         "newRegimeTaxableIncome"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P06",
@@ -113,8 +113,8 @@
       "answerFacts": [
         "exemption"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P07",
@@ -131,8 +131,8 @@
       "answerFacts": [
         "cess"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P08",
@@ -150,8 +150,8 @@
       "answerFacts": [
         "taxAfter"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P09",
@@ -169,8 +169,8 @@
       "answerFacts": [
         "saving"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "P10",
@@ -190,8 +190,8 @@
       "answerFacts": [
         "achievable"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A01",
@@ -206,8 +206,8 @@
       "answerFacts": [
         "saving"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A02",
@@ -225,8 +225,8 @@
         "totalTax",
         "newRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A03",
@@ -244,8 +244,8 @@
         "totalTax",
         "oldRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A04",
@@ -260,8 +260,8 @@
       "answerFacts": [
         "outputGST"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A05",
@@ -276,8 +276,8 @@
       "answerFacts": [
         "netGSTPayable"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A06",
@@ -292,8 +292,8 @@
       "answerFacts": [
         "registrationRequired"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A07",
@@ -308,8 +308,8 @@
       "answerFacts": [
         "presumptiveProfit"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A08",
@@ -326,8 +326,8 @@
       "answerFacts": [
         "due_15_Sep"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A09",
@@ -345,8 +345,8 @@
         "taxableIncome",
         "oldRegimeTaxableIncome"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "A10",
@@ -364,8 +364,8 @@
       "answerFacts": [
         "taxAfter"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R01",
@@ -380,8 +380,8 @@
       "answerFacts": [
         "saving"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R02",
@@ -399,8 +399,8 @@
         "totalTax",
         "newRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R03",
@@ -418,8 +418,8 @@
         "totalTax",
         "oldRegimeTax"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R04",
@@ -434,8 +434,8 @@
       "answerFacts": [
         "headroomToThreshold"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R05",
@@ -450,8 +450,8 @@
       "answerFacts": [
         "registrationRequired"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R06",
@@ -466,8 +466,8 @@
       "answerFacts": [
         "presumptiveProfit"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R07",
@@ -482,8 +482,8 @@
       "answerFacts": [
         "expectedTDS"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R08",
@@ -500,8 +500,8 @@
       "answerFacts": [
         "due_15_Dec"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R09",
@@ -519,8 +519,8 @@
       "answerFacts": [
         "taxAfter"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     },
     {
       "id": "R10",
@@ -538,8 +538,8 @@
       "answerFacts": [
         "saving"
       ],
-      "checkedBy": "",
-      "checkedHow": ""
+      "checkedBy": "Nagasai",
+      "checkedHow": "Checked by hand against the working and the FY 2025-26 rules; cross-checked with a second LLM"
     }
   ]
 }

@@ -57,9 +57,13 @@ export function numbersIn(text: string): number[] {
 
 /** Does the text say the tax is nothing? */
 export function saysZero(text: string): boolean {
+  // A zero may end a sentence ("is ₹0."), so a full stop after it is fine;
+  // only a following digit or decimal part makes it a different number.
+  const Z = "0(?![\\d,]|\\.\\d)";
   return (
-    /(?:₹|rs\.?|inr)\s?0(?![\d,.])/i.test(text) ||
-    /\b(?:is|of|be|pay|owe|payable|comes? to|:)\s*(?:₹|rs\.?\s?)?0(?![\d,.])/i.test(text) ||
+    new RegExp(`^\\s*(?:₹|rs\\.?\\s?|inr\\s?)?${Z}\\s*$`, "i").test(text) ||
+    new RegExp(`(?:₹|rs\\.?|inr)\\s?${Z}`, "i").test(text) ||
+    new RegExp(`\\b(?:is|of|be|pay|owe|payable|comes? to|:)\\s*(?:₹|rs\\.?\\s?)?${Z}`, "i").test(text) ||
     /\b(zero|nil|nothing)\b/i.test(text) ||
     /\bno (?:income )?tax\b/i.test(text) ||
     /\b(?:not|won'?t|will not|don'?t|do not)\b[^.]{0,20}\bpay any\b/i.test(text)
@@ -156,14 +160,25 @@ export function markBaseline(q: Question, text: string): Mark {
   return markText(q, line);
 }
 
-/** For reproducibility: the figures an answer committed to, as a comparable key. */
-export function figureKey(q: Question, text: string, condition: string): string {
+/**
+ * For reproducibility: the answer a reply committed to, as a comparable key.
+ * Baseline: its final ANSWER line. Platform: the value of the tool output that
+ * answers the question. The platform's wording, and which supporting figures
+ * it chooses to mention, vary between runs by design; the answer must not.
+ */
+export function figureKey(q: Question, text: string, condition: string, tools: ToolOut = []): string {
   if (condition.startsWith("baseline")) {
     const line = finalAnswerLine(text);
     if (line === null) return "(none)";
     if (q.kind === "amount") return String(numbersIn(line)[0] ?? line.toLowerCase());
     return markText(q, line).readAs;
   }
-  // The platform's wording varies between runs by design; its figures must not.
-  return [...new Set(numbersIn(text))].sort((a, b) => a - b).join(" ");
+  const holding = tools.flatMap((t) => q.answerFacts.filter((k) => k in t.facts).map((k) => String(t.facts[k])));
+  return holding.length ? [...new Set(holding)].sort().join(" ") : "(no answering tool)";
+}
+
+/** Figures above 100 in a platform reply that no tool produced. Years are ignored. */
+export function strayFigures(text: string, tools: ToolOut): number[] {
+  const allowed = new Set(tools.flatMap((t) => Object.values(t.facts).filter((v): v is number => typeof v === "number").map((v) => Math.abs(Math.round(v)))));
+  return numbersIn(text).filter((n) => n > 100 && !allowed.has(n) && !(n >= 1900 && n <= 2100));
 }

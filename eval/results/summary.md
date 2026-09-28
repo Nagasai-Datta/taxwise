@@ -1,30 +1,34 @@
 # Evaluation summary
 
-Generated 2026-09-28T06:22:41.875Z
+Generated 2026-09-28T06:36:56.132Z
 
 ## By condition
 
-| Condition | Answers | Correct | Questions right in every run | Same figures in every run | Median latency (ms) |
+| Condition | Answers | Correct | Questions right in every run | Same answer in every run | Median latency (ms) |
 |---|---|---|---|---|---|
-| platform-model | 90 | 68/90 | 19/30 | 7/30 | 8133 |
+| platform-model | 90 | 69/90 | 20/30 | 24/30 | 8133 |
 | platform-nomodel | 90 | 54/90 | 18/30 | 30/30 | 0 |
-| baseline-rules | 90 | 50/90 | 14/30 | 19/30 | 24512 |
+| baseline-rules | 90 | 53/90 | 15/30 | 19/30 | 24512 |
 | baseline-plain | 90 | 23/90 | 4/30 | 6/30 | 2976 |
 
 ## Notes
 
 - platform-model: guard rejected the model's wording in 10 of 90; deterministic wording used in 14; routed away from Computation in 0; router consulted a model in 0.
+- platform-model: replies containing a figure above 100 that no tool produced: 0 of 90.
 - platform-nomodel: guard rejected the model's wording in 0 of 90; deterministic wording used in 90; routed away from Computation in 0; router consulted a model in 0.
-- baseline-rules: 15 answer(s) had no final ANSWER line, counted as wrong.
+- platform-nomodel: replies containing a figure above 100 that no tool produced: 0 of 90.
+- baseline-rules: 15 answer(s) had no final ANSWER line (9 empty, the rest cut off mid-working), counted as wrong.
+- baseline-rules: among the 75 answers that reached a final ANSWER line, 53 were right.
 - baseline-plain: 8 answer(s) ended in an error or timeout, counted as wrong.
-- baseline-plain: 27 answer(s) had no final ANSWER line, counted as wrong.
+- baseline-plain: 27 answer(s) had no final ANSWER line (16 empty, the rest cut off mid-working), counted as wrong.
+- baseline-plain: among the 55 answers that reached a final ANSWER line, 23 were right.
 
 ## By question (runs correct / runs)
 
 | Question | Expected | platform-model | platform-nomodel | baseline-rules | baseline-plain |
 |---|---|---|---|---|---|
 | P01 | 87,880 | 3/3 | 3/3 | 1/3 | 0/3 |
-| P02 | zero | 2/3 | 3/3 | 0/3 | 0/3 |
+| P02 | zero | 3/3 | 3/3 | 3/3 | 0/3 |
 | P03 | 87,880 | 3/3 | 3/3 | 3/3 | 0/3 |
 | P04 | 8,60,000 | 3/3 | 0/3 | 3/3 | 2/3 |
 | P05 | 11,25,000 | 3/3 | 0/3 | 3/3 | 0/3 |
@@ -58,5 +62,5 @@ Generated 2026-09-28T06:22:41.875Z
 
 - Platform: the tool that answers the question must have produced the expected value, and the reply shown to the user must state it.
 - Baseline: only the final line 'ANSWER: <value>' is marked; a reply without one is wrong.
-- Same figures in every run: the platform's set of figures, or the baseline's final answer, is identical across runs.
+- Same answer in every run: for the platform, the tool output that answers the question; for the baseline, its final ANSWER line. Identical across all three runs.
 - Every answer is in answers.csv. Check the wrong ones by hand before quoting any number.

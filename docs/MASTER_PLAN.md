@@ -8,8 +8,9 @@
 | Team | M Naga Sai Dattu (23BCE0757), Tanishq Daga (23BCE2119), Devesh Atul Mahajan (23BCE0801) |
 | Guide | Dr. Kalaavathi B |
 | Repository | https://github.com/Nagasai-Datta/taxwise |
-| Document date | 22 September 2026 |
-| Describes | The repository at its latest commit, with the audit fixes in section 16.1 applied |
+| Document date | 28 September 2026 |
+| Describes | The repository at its latest commit, with the corrections in section 16.1 applied and the evaluation in section 15.3 complete |
+| Paper | BAICONF 2026, 13th Business Analytics and Intelligence Conference, IIM Bangalore, 17 to 19 December 2026. Full paper due 31 October 2026. Paper documents are in `paper/` |
 
 ---
 
@@ -45,11 +46,11 @@ Earlier conversations contain descriptions of the project that are no longer tru
 
 ## 2. Summary
 
-Financial literacy in India is low, and tax knowledge is its weakest part. A young person starting work faces tax decisions with no preparation. The tools available to them fail in two different ways. Tax portals calculate correctly but assume the user already knows the vocabulary. General-purpose AI chatbots explain well, but published studies show they make material errors when calculating jurisdiction-specific tax.
+Financial literacy in India is low: a national survey in 2019 measured it at 27 percent of adults. A young person starting work faces tax decisions with little preparation. Calculators compute correctly but assume the user already knows the vocabulary, and the tax department added its own AI assistant in 2026. General-purpose AI chatbots explain well, but published evaluations on US and other non-Indian tax law find them below expert level, and given complete inputs, frontier models computed fewer than a third of simplified US returns exactly.
 
 This platform is a third option: one chat interface where a young earner can learn a concept, compute a figure correctly, and understand what it means for their money.
 
-**The central design rule is that the language model never produces a number that appears in an answer.** The model decides which calculation is needed and puts the result into words. A deterministic rule engine, reading a versioned rulebook, produces every figure. This rule is enforced in five separate places rather than stated once.
+**The central design rule is that no figure shown to the user originates in the language model.** The model decides which calculation is needed, passes at most a choice or an amount the user stated, and puts the result into words. A deterministic rule engine, reading a versioned rulebook, produces every figure. This rule is enforced in five separate places rather than stated once.
 
 Three agents sit behind the chat. The **Tutor** explains concepts. The **Computation** agent calculates tax, GST and related figures. The **Management** agent reports on spending, saving and goals. What separates them is not their instructions but the list of tools each is permitted to call: the Tutor cannot reach a tax function at all.
 
@@ -58,10 +59,10 @@ The system is organised as five layers, like an operating system, in which a ker
 Three properties follow from the central rule without any extra machinery:
 
 - **Traceable.** Every figure can be traced to the rule that produced it.
-- **Reproducible.** The same question gives the same figures, whichever model is used.
-- **Safe when the model fails.** With no model available at all, every figure is still correct; only the wording becomes plainer.
+- **Reproducible.** The same question gives the same figures by construction, whichever model phrases them.
+- **Safe when the model fails.** With no model available at all, every figure shown is still correct. The keyword fallback answers fewer questions directly: in the evaluation it answered 18 of 30 exactly and gave a related answer, usually the regime comparison, to the rest.
 
-The platform is validated in a laboratory setting on three representative earner profiles: a salaried employee, a business owner, and a freelance professional. It targets Technology Readiness Level 4. It does not connect to any bank or government system.
+The platform is validated in a laboratory setting on three representative earner profiles: a salaried employee, a business owner, and a freelance professional. A 30-question evaluation against the same model working without tools is reported in section 15.3. It targets Technology Readiness Level 4. It does not connect to any bank or government system.
 
 ---
 
@@ -69,15 +70,15 @@ The platform is validated in a laboratory setting on three representative earner
 
 ### 3.1 Financial literacy in India
 
-The National Centre for Financial Education's 2019 survey (NCFE-FLIS 2019) reported that 27 percent of Indian adults were financially literate, with the weakest results in tax and procedural knowledge. This figure is used in the project's literature review and must be checked against the original report before it is cited in a paper (see section 18).
+The National Centre for Financial Education's 2019 survey (NCFE-FLIS 2019, 75,140 adults aged 18 to 80) measured overall financial literacy in India at 27 percent. This is verified against the report's executive summary. The summary does not say that tax knowledge is the weakest area, so that claim is not made. The S&P Global FinLit survey (2015) puts India at 24 percent against a world figure of 33 percent (section 18).
 
 Income tax is not taught at school or university, yet every salaried employee, business owner and self-employed professional is expected to understand it from their first month of earning. A payslip introduces terms such as gross salary, tax deducted at source (TDS), house rent allowance (HRA) and Chapter VI-A deductions without explanation.
 
 ### 3.2 Why existing tools do not solve it
 
-**Tax portals and calculators** are transactional. They accept figures and return figures. They assume the user already understands what to enter and what the result means.
+**Tax portals and calculators** are transactional. They accept figures and return figures. They assume the user already understands what to enter and what the result means. The Income Tax Department launched an AI assistant, Kar Saathi, in 2026, and at least one Indian filing tool (Auto ITR, 2026) pairs rule-based computation with a chatbot. We found no published evaluation of the figures such assistants give, and Auto ITR describes no check of its model's replies against the computed figures.
 
-**General-purpose AI assistants** explain fluently but are unreliable at jurisdiction-specific computation. Two strands of published work document this: studies of large language models on tax law tasks, and evaluations on the VITA test used for low-income taxpayer assistance. Both report material errors in computation and citation (references [15] and [24] in section 18).
+**General-purpose AI assistants** explain fluently but are unreliable at jurisdiction-specific computation. Given complete inputs, frontier models computed fewer than a third of simplified US federal returns exactly, and their answers varied between runs (TaxCalcBench, 2025). On US tax questions, accuracy rises with each model generation but stays below expert level (Nay et al., 2024); on basic multiple-choice VITA questions the best models scored about 83 percent and weaker ones about 50 percent (2025). All of this evidence concerns US or other non-Indian law; no Indian-tax benchmark was found.
 
 A language model is a text predictor. It does not calculate; it produces text that resembles a calculation. That is acceptable for explanation and unacceptable for a tax figure.
 
@@ -121,9 +122,11 @@ Young Indian earners in their first years of work, in three situations that the 
 
 ## 5. The governing rule, and the five places it is enforced
 
-> **The language model never produces a number that appears in an answer.**
+> **No figure shown to the user originates in the language model.**
 
 The model is allowed to do three things: understand the question, decide which calculation to run, and put the result into words. It may repeat a figure that a tool produced. It may never originate one.
+
+One boundary matters. The model may pass a number as a tool argument when it is a choice or an amount the user stated: a hypothetical investment, a target figure. If the model misreads the question there, for example passing an additional investment as the total, the tool computes a correct figure for the wrong question, and no check on figures can notice. The evaluation measures this (section 15.3).
 
 A rule stated once can be ignored. This one is enforced at five separate points, each catching something the others cannot.
 
@@ -407,7 +410,8 @@ Every rate, slab, ceiling, threshold and deadline, in nine sections: regimes, ce
 
 - Financial year **2025-26**, assessment year **2026-27**, under the **Income-tax Act, 1961**.
 - The model never reads a figure from it. It sees only section names and plain labels, for wording.
-- The file records its own verification: **status VERIFIED, verified by Naga Sai Dattu, 8 September 2026**, by checking each figure against the official calculator. `npm run checklist` prints every figure for re-checking.
+- The file's header records **status VERIFIED, verified by Naga Sai Dattu, 8 September 2026**, by checking each figure against the official calculator. Each section's own note still reads NOT YET VERIFIED and should be brought in line. A rate check cannot catch a rule applied to the wrong amount: two such errors (44AD and 194J, section 16.1) were found only when the evaluation's answer key was worked independently. `npm run checklist` prints every figure for re-checking.
+- Section 87A marginal relief for the new regime (tax limited to the income above ₹12,00,000 just past the threshold) is not implemented. No demonstration profile is affected.
 - It lists four things deliberately not implemented: surcharge above ₹50 lakh, marginal relief on surcharge, senior citizen slab variations under the old regime, and capital gains. No demonstration profile reaches any of them.
 
 ### 10.3 The explanatory corpus, `data/concepts.json`
@@ -512,6 +516,8 @@ Recorded in `data/profiles.json`: basic salary is taken as 50 percent of the gro
 | `drizzle.config.ts` | Database schema tool settings. Excludes the `concepts` table so a schema push can never delete it |
 | `next.config.mjs`, `tsconfig.json`, `tailwind.config.ts`, `postcss.config.mjs`, `vitest.config.ts` | Framework, compiler, styling and test configuration |
 | `Case 1.pdf`, `profiles.pdf` | Reference sheets: worked test questions per profile, and the profile descriptions |
+| `eval/` | The paper's evaluation: 30 questions with the answer key, the runner, the marking rules, the guard stress test, and `eval/results/` (section 15.3) |
+| `paper/` | Everything for writing the paper: this plan as a Word file, the paper state, the chat prompt, the source table, the literature notes, the submitted abstract, and the scripts already applied |
 
 ### 13.2 `app/`: pages and the server entry points
 
@@ -612,7 +618,7 @@ Recorded in `data/profiles.json`: basic salary is taken as 50 percent of the gro
 
 - **`data/`**: `tax_rules.json`, `profiles.json`, `concepts.json`, `investments.json`, described in section 10.
 - **`scripts/`**: the command-line tools listed in section 14.2.
-- **`tests/`**: 17 files, 314 assertions, covering the arithmetic, permissions, the guard, formatting, routing, retrieval, memory, capabilities, the graph, return preparation, invoices and investments, the services, payments, and the component registry.
+- **`tests/`**: 18 files, 318 assertions, covering the arithmetic, permissions, the guard, formatting, routing, retrieval, memory, capabilities, the graph, return preparation, invoices and investments, the services, payments, and the component registry. `tests/corrections.test.ts` holds the 44AD and 194J corrections.
 
 ---
 
@@ -650,7 +656,7 @@ Open http://localhost:3000. **It works at this point with no keys and no databas
 |---|---|
 | `npm run dev` | Start on port 3000 |
 | `npm run build`, `npm start` | Production build, and run it |
-| `npm test` | Run all 314 assertions |
+| `npm test` | Run all 318 assertions |
 | `npm run ask -- "question"` | Ask from the terminal; add `--profile ARJUN-002` or `ROHAN-003` |
 | `npm run verify` | Every profile's full tax calculation, step by step |
 | `npm run checklist` | Every rulebook figure, to check against the official calculator |
@@ -661,6 +667,9 @@ Open http://localhost:3000. **It works at this point with no keys and no databas
 | `npm run daemons` | One poll of the always-on services; add `--profile` |
 | `npm run db:push`, `db:seed`, `db:check`, `db:studio` | Create tables, load profiles, diagnose the connection, browse the data |
 | `npm run corpus:embed`, `corpus:check` | Embed the corpus; report how much is embedded |
+| `npm run eval` | The paper's evaluation: 30 questions, four conditions, three runs each; resumes where it stopped. Add `-- --only <condition>` for one condition |
+| `npm run eval:guard` | The guard stress test, no model needed |
+| `npm run eval:summary` | Mark every stored answer and write `eval/results/summary.md` and `answers.csv` |
 
 ### 14.3 Configuration
 
@@ -681,7 +690,7 @@ Everything in this section was observed on the running system. Sample sizes are 
 | End-to-end answer time after provider assignment and timeouts | about 2 to 3 seconds (observed 2,005 ms, 2,648 ms, 2,829 ms) | Individual runs |
 | Embedding a question with Gemini | 3.9 seconds, hence an 800 ms budget with term matching as fallback | Single observation |
 | Reproducibility | The same question asked repeatedly gave identical figures (₹0 and ₹87,880) with different wording | Repeated runs |
-| Automated checks | 314 assertions across 17 files, all passing; the arithmetic runs with no model, network or interface | `npm test` |
+| Automated checks | 318 assertions across 18 files, all passing; the arithmetic runs with no model, network or interface | `npm test` |
 
 ### 15.2 Failures observed, and the mechanism each produced
 
@@ -702,41 +711,86 @@ Each of these happened on the running system. None produced a wrong figure for t
 
 The most important of these for a paper is the false claim made from true figures. It shows a limit of any check that inspects only numbers, and why the fifth enforcement point exists.
 
+### 15.3 The evaluation
+
+**Design.** 30 questions, 10 per profile, each with one expected answer: a rupee figure, zero, yes or no, or "cannot be reached". The answer key was worked by hand from the FY 2025-26 rules, independently of the platform, and checked by Naga Sai Dattu against each question's working, with a second LLM as a cross-check. Each question was asked in four conditions, three times each, on the seed data:
+
+| Condition | What answers |
+|---|---|
+| Platform with model | The platform as built, model openai/gpt-oss-20b on Groq, 60 s allowed per model call |
+| Platform without model | The same platform with every model key removed |
+| Baseline with rulebook | The same model, no tools, given the profile and the whole rulebook, told to finish with `ANSWER: <value>`; 60 s allowed |
+| Baseline with profile only | As above, without the rulebook |
+
+**Marking.** The platform is right when the tool output that answers the question equals the expected value and the reply states it. The baseline is marked on its final `ANSWER:` line only. Marking is automatic (`eval/score.ts`); the answers are in `eval/results/answers.csv`.
+
+**Results.**
+
+| Condition | Right, of 90 | Questions right in all 3 runs | Same answer in all 3 runs | Replies with a figure no tool produced |
+|---|---|---|---|---|
+| Platform with model | 69 | 20 of 30 | 24 of 30 | 0 of 90 |
+| Platform without model | 54 | 18 of 30 | 30 of 30 | 0 of 90 |
+| Baseline with rulebook | 53 | 15 of 30 | 19 of 30 | not applicable |
+| Baseline with profile only | 23 | 4 of 30 | 6 of 30 | not applicable |
+
+By profile, the platform with model scored 25, 23 and 21 of 30 for Priya, Arjun and Rohan; the baseline with rulebook scored 26, 12 and 15. On the salaried profile the two were level. The platform's lead comes from the business and professional profiles.
+
+**What the platform got wrong (21 of 90), with no wrong figure shown.**
+
+- **Argument misread (6):** asked to invest "another" ₹50,000 (Priya) or ₹40,000 (Rohan), the model passed the amount as the total, so the tool correctly computed a different question (no saving for Priya; a higher tax for Rohan). Every run.
+- **Wrong or missing tool (15):** the model fetched only the profile summary and answered with that, or asked for turnover the platform already holds (GST registration and headroom), or ran the plain tax calculation where a what-if was asked. One reply stated, without any figure, that the new regime applies only to salaried people, which is false. The guard checks figures, so it did not catch this.
+
+**What the baselines got wrong.** Every wrong baseline answer that reached a final line was a wrong figure or verdict presented as the answer: 22 of 75 with the rulebook, 32 of 55 without. 15 rulebook answers and 27 profile-only answers never reached a final line (empty or cut off mid-working), and 8 profile-only answers timed out; all are counted wrong.
+
+**Guard stress test** (1,707 replies constructed around real tool outputs; no model involved): 0 of 448 faithful replies rejected, including Western grouping, lakh and million forms; 1,062 of 1,062 invented figures above 100 caught (changed digit, one rupee off, rounding, sums, differences, invented lakh values, another profile's figure, figures in words). Correct figures written in words are refused by design. Numbers of 100 or less are exempt by design, so an invented small amount or percentage passes.
+
+**Limits of this evaluation.** One model, one day of runs, 30 questions on three constructed profiles, an answer key checked by one author. It supports counts on this question set, not general accuracy claims.
+
 ---
 
 ## 16. Current issues and limitations
 
-### 16.1 Fixed in the pre-paper audit
+### 16.1 Corrections made while preparing the paper
 
-The audit that produced this document found five issues in the repository, fixed by `fix-audit.sh`. **Apply it and push before relying on section 13 or the test count.**
+The pre-paper audit (`fix-audit.sh`) and the evaluation's independent answer key (`fix-rules.sh`) found these. All are corrected in the repository.
 
-1. **The invoice form did not produce an invoice in the browser.** Submitted form values were always passed under the argument name used by the return tool, so the invoice tool asked for its form again. Now each tool's own argument name is used.
+1. **The invoice form did not produce an invoice in the browser.** Submitted form values were passed under the argument name used by the return tool. Each tool's own argument name is now used.
 2. **The model could have supplied Form 16 or invoice figures itself**, bypassing the first enforcement point. Both tools are now shown to the model with no arguments.
-3. **Two tests asserted counts from before the invoice and investment features** (309 of 311 passing). Updated; 314 of 314 pass.
-4. **Display labels showed outdated provider assignments and tool counts** on `/status` and two scripts. Routing was never affected. Counts are now derived from the registry.
-5. **An unused component**, `TaskRail.tsx`, was removed.
+3. **Display labels showed outdated provider assignments and tool counts** on `/status` and two scripts. Counts are now derived from the registry.
+4. **An unused component**, `TaskRail.tsx`, was removed.
+5. **Section 44AD applied 6 percent to the whole turnover.** The Act, and the rulebook's own note, apply 6 percent to digital receipts and 8 percent to the rest. Arjun's declared profit is ₹1,46,400, not ₹1,44,000.
+6. **Section 194J expected TDS on all receipts, including overseas clients**, who deduct nothing. Rohan's expected TDS is ₹80,000 on ₹8,00,000 of domestic receipts, matching what was deducted; there is no shortfall.
+
+Tests: 318 of 318 pass.
 
 ### 16.2 Known limitations
 
 **Scope of evidence**
+
 - Validated only in a laboratory setting, on three constructed profiles and simulated transactions. Technology Readiness Level 4.
 - **No user study.** The effect on anyone's financial literacy has not been measured. That the platform supports literacy is a design argument, not a result.
-- **No comparison against a baseline.** Correctness is shown against hand-computed figures for three profiles and a rulebook checked by the team, not against tax software or other language model systems.
-- Latency figures come from two runs each on one connection.
+- **Small evaluation.** One model, 30 questions, three constructed profiles, and an answer key checked by one author (section 15.3). No comparison against commercial tax software.
+- Latency figures come from two runs each on one connection. During the evaluation the model often took longer than the 12 s production limit, so the evaluation allowed 60 s; no timing claim is made.
 
 **Tax coverage**
-- Financial year 2025-26 under the Income-tax Act, 1961 only. Later years are governed by new legislation with a different section structure; moving to it means re-transcribing the rulebook. Confirm the exact legal position before stating it in a paper.
+
+- Financial year 2025-26 under the Income-tax Act, 1961 only. The Income Tax Act, 2025 took effect on 1 April 2026 with a different section structure; moving to it means re-transcribing the rulebook, which the versioned rulebook makes a data change rather than a code change.
+- Section 87A marginal relief for the new regime is not implemented (no profile is affected).
 - Not implemented: surcharge above ₹50 lakh, marginal relief on surcharge, senior and super-senior citizen slabs, capital gains, section 80GG (rent relief without HRA), interest under sections 234B and 234C.
 - **The presumptive result is not carried into the regime comparison.** For Arjun and Rohan, the regime comparison taxes income as declared from books; the presumptive comparison is a separate answer. The user must connect the two.
 - **The deduction optimiser treats every section as available to everyone.** For Priya it ranks home loan interest (section 24(b)) first and concludes she could pay no tax, though she has no home loan. The arithmetic is right; whether each section applies to the person is not modelled. It should consider only sections the person can actually use.
 
 **Guarantee**
-- The guard checks figures. The fifth enforcement point, for verdicts, currently applies to one kind of result: an unreachable target. A model that reversed another verdict in words, for example naming the wrong regime as cheaper while quoting correct figures, would not be caught automatically.
+
+- The guard checks figures. The fifth enforcement point, for verdicts, currently applies to one kind of result: an unreachable target. A model that reversed another verdict in words, for example naming the wrong regime as cheaper while quoting correct figures, would not be caught automatically. A false statement with no figure in it is not caught either (one occurred in the evaluation).
+- The model's arguments and tool choice are not checked. In the evaluation this caused all 21 of the platform's wrong answers: a correct figure for a different question, or no answer to the question asked.
+- Without a model, the keyword fallback answers fewer questions directly (18 of 30 in the evaluation).
 - Memory notes offered by the model are free text, parsed strictly. What was computed and explained is recorded from what actually ran, not from the model.
 
 **Engineering**
+
 - No login. The three demonstration users are separated by filtering every query on the profile.
-- Free-tier providers can retire models or become overloaded at any time; the platform degrades to plainer wording, never to wrong figures.
+- Free-tier providers can retire models, become overloaded or rate-limit at any time; the platform degrades to plainer wording and fewer direct answers, never to wrong figures.
 - The embedding table has no index; unnecessary at 55 texts, required at scale.
 - The always-on services run only while the profile page is open in a browser.
 - English only.
@@ -748,66 +802,45 @@ The audit that produced this document found five issues in the repository, fixed
 
 ### 17.1 Supported by this work
 
-- An architecture in which the language model never originates a numerical value, enforced at five named points, each catching a class of error the others cannot.
+- An architecture in which no figure shown to the user originates in the language model, enforced at five named points, each catching a class of error the others cannot.
+- In the evaluation, 0 of 180 platform replies (with and without the model) contained a figure above 100 that no tool produced.
+- On 30 questions, three runs each: the platform with its model answered 69 of 90 correctly, against 53 of 90 for the same model without tools but with the full rulebook in its prompt, and 23 of 90 with the profile only. State the sample every time.
+- The platform's wrong answers were unanswered or answered a different question, with correct figures; the baseline's were wrong figures presented as answers.
+- Reproducibility: the answering figure was identical in all three runs for 24 of 30 questions with the model and 30 of 30 without it, against 19 of 30 for the baseline with rulebook.
 - Traceability by construction: every figure passes through one logged entry point, and each calculation records its working as it computes.
-- Reproducibility of figures independent of the model, observed across repeated questions.
-- Graceful degradation, observed under model retirement, provider overload and a hallucinated tool call: figures unchanged, wording plainer.
+- Graceful degradation: without any model, every figure shown stayed correct, with fewer questions answered directly.
+- The guard stress test in section 15.3, described as constructed replies, not model behaviour.
 - Separation of agents by permitted tools rather than by instruction, with the Tutor structurally unable to reach any tax function.
 - Dual-mode answers drawn from a single tool result through a fixed component registry.
-- Answering backwards from a target figure by bisection through the same engine, which respects the discontinuity created by the section 87A rebate, and which reports unreachable targets rather than a nearest value.
-- A catalogue of observed model failures in this setting and the mechanism each motivated (section 15.2), in particular a false claim built from true figures.
-- Keyword-first routing was faster and correct where a small model classifier was slower and wrong, **as an observation on specific questions, not a benchmark**.
-- 314 automated assertions over the arithmetic and the guarantees, if the venue values this.
+- Answering backwards from a target figure by bisection through the same engine, which reports unreachable targets rather than a nearest value. The discontinuity argument holds for the old regime's 87A rebate; the new regime's marginal relief is not implemented.
+- A catalogue of observed model failures and the mechanism each motivated (section 15.2), in particular a false claim built from true figures.
+- Independent working of expected answers found two rule-application errors that rate checks had missed; both were corrected.
+- 318 automated assertions over the arithmetic and the guarantees, if the venue values this.
 
 ### 17.2 Not supported, and must not be claimed
 
-- Any accuracy percentage, or superiority over another system.
+- Any general accuracy percentage, or superiority beyond this question set. The baseline with rulebook matched the platform on the salaried profile.
+- That the platform is the first to combine Indian tax rules with a conversational assistant (Auto ITR, 2026, and the department's Kar Saathi exist).
+- That tax knowledge is the weakest area of Indian financial literacy (not in the NCFE summary).
+- That models make "material errors" on Indian tax: the published evidence is US and other non-Indian law.
 - Any improvement in users' financial literacy.
 - Production readiness, scale, security, or regulatory compliance.
 - Correctness for any year or legislation other than FY 2025-26 under the 1961 Act, or for surcharge, capital gains or senior citizens.
-- That the guard catches every false statement.
-- That the latency figures generalise.
-- That the system is the first of its kind, unless the literature search in the paper supports it.
+- That the guard catches every false statement, or that the model never errs: its arguments and tool choice are unchecked.
+- Any timing or latency claim.
 
 ---
 
 ## 18. Literature
 
-These are the 29 references used in the project's review documents. **None has yet been checked against its primary source for this paper.** Several have missing authors, and three are not suitable for a conference paper. Each must be verified, and weak items replaced, before submission.
+The literature review is complete and lives in `paper/`:
 
-| # | Reference | Issue to resolve |
-|---|---|---|
-| 1 | NCFE, *Financial Literacy and Inclusion in India: NCFE-FLIS 2019* | Confirm the 27 percent figure and the tax finding against the report itself |
-| 2 | Klapper and Lusardi, *Financial literacy and financial resilience: Evidence from around the world*, Financial Management 49(3), 2020 | Confirm details and DOI |
-| 3 | Wei et al., *Chain-of-thought prompting elicits reasoning in large language models*, NeurIPS 2022 | Confirm |
-| 4 | Yao et al., *ReAct: Synergizing reasoning and acting in language models*, ICLR 2023 | Confirm |
-| 5 | Cruz et al., *Using chatbot technologies to help individuals make sound personalized financial decisions*, 2022 | Venue missing |
-| 6 | Gao et al., *Retrieval-augmented generation for large language models: A survey*, arXiv:2312.10997 | Confirm; check for a published version |
-| 7 | Qin et al., *ToolLLM*, ICLR 2024 | Confirm |
-| 8 | Wu et al., *AutoGen*, arXiv:2308.08155 | Confirm; check for a published version |
-| 9 | Lee, Stevens, Han and Song, *A survey of large language models in finance (FinLLMs)*, arXiv:2402.02315 | Confirm |
-| 10 | Han et al., *LLM multi-agent systems: Challenges and open problems*, arXiv:2402.03578 | Confirm |
-| 11 | Huang and Huang, *A survey on retrieval-augmented text generation for large language models*, arXiv:2404.10981 | Confirm |
-| 12 | Yu et al., *Evaluation of retrieval-augmented generation: A survey*, arXiv:2405.07437 | Confirm |
-| 13 | Qu et al., *Tool learning with large language models: A survey*, arXiv:2405.17935 | Confirm |
-| 14 | Nie et al., *A survey of large language models for financial applications*, arXiv:2406.11903 | Confirm |
-| 15 | Nay et al., *Large language models as tax attorneys*, Phil. Trans. R. Soc. A 382, 2024 | Confirm; central to the problem statement |
-| 16 | Li et al., *Personal LLM agents*, arXiv:2401.05459 | Confirm |
-| 17 | Liu et al., *ToolACE*, arXiv:2409.00920 | Confirm |
-| 18 | Wang et al., *A comprehensive survey of small language models*, arXiv:2411.03350 | Confirm |
-| 19 | *An empirical study on financial literacy in India*, IJFMR, 2024 | Authors missing; weak venue; consider replacing |
-| 20 | *Financial literacy in India*, Futuristic Trends in Social Sciences (IIP Series), 2024 | Authors missing; weak venue; consider replacing |
-| 21 | *Exploring the readiness of prominent small language models for the democratization of financial literacy*, arXiv:2410.07118 | Authors missing |
-| 22 | Guo et al., *A survey on LLM-based multi-agent system*, arXiv:2412.17481 | Confirm |
-| 23 | Tran et al., *Multi-agent collaboration mechanisms: A survey of LLMs*, arXiv:2501.06322 | Confirm |
-| 24 | *Performance of LLMs on the VITA test*, Artificial Intelligence and Law, 2025 | Authors missing; central to the problem statement |
-| 25 | *Using large language models for legal decision-making in Austrian value-added tax law*, arXiv:2507.08468 | Authors missing |
-| 26 | *Taxation perspectives from large language models: a case study on additional tax penalties*, arXiv:2503.03444 | Authors missing |
-| 27 | Our Wealth Insights, *Financial literacy data by country*, 2025 | A web article; replace with a primary survey source |
-| 28 | *A hybrid RAG-LLaMA framework for scalable and accurate interpretation of legal texts*, Applied Artificial Intelligence, 2026 | Authors missing |
-| 29 | Coinlaw, *Financial literacy statistics 2026* | A statistics aggregator; replace |
+- **`paper/Source_Table.docx`**: every reference, its full citation, DOI or link, how it was checked, its status, and what the paper uses it for.
+- **`paper/Literature_Notes.docx`**: the close neighbours read in depth (PAL, Program of Thoughts, AIOS, TaxCalcBench, Auto ITR, CaMeL), what each built and showed, how this work differs, and the sentence the paper will use.
 
-**Gaps a reviewer is likely to notice:** work on deterministic tool use or program-aided reasoning for numerical accuracy, work on guardrails and output verification for language models, and any existing tax or finance assistants that combine a language model with a rules engine. These should be searched for, not assumed absent.
+**Summary of the check.** Of the project's original 29 references: 22 verified, 2 corrected because the authors were wrong (refs 5 and 22), 3 not found anywhere and dropped (19, 20, 28), 2 web sources replaced by the survey they quoted (27, 29). Seven arXiv entries have reviewed versions, which are cited instead. Four stand-ins and fifteen new references were added, about 43 usable in total. Every figure the paper quotes was read in its source.
+
+**What the literature changes.** The paper cannot claim to be first (Auto ITR; Kar Saathi). Model tax errors are documented for US and other non-Indian law only (TaxCalcBench, Nay et al., the VITA study, Austrian VAT, Korean tax penalties). The closest technical precedents are program-aided reasoning, where the model still writes the program and its constants, and AIOS, whose kernel manages the model's resources rather than limiting its authority.
 
 ---
 
@@ -828,7 +861,7 @@ These are the 29 references used in the project's review documents. **None has y
 | Section 80D | Deduction for health insurance premiums |
 | Section 80CCD(1B) | An additional pension deduction above the 80C ceiling |
 | Section 24(b) | Deduction for interest on a home loan |
-| Section 87A rebate | A relief that cancels tax entirely below an income threshold. It is a step, not a taper |
+| Section 87A rebate | A relief that cancels tax entirely below an income threshold. In the old regime it is a step. In the new regime the Act adds marginal relief just above the threshold, which the platform does not implement |
 | Cess | A charge of 4 percent on the tax after rebate |
 | Surcharge | An extra percentage on tax for high incomes. Not implemented here |
 | TDS | Tax deducted at source: tax withheld by the payer before paying |
@@ -869,7 +902,7 @@ Each decision, with the reason or evidence behind it.
 
 | Decision | Reason |
 |---|---|
-| The model never produces a figure | Published studies show language models err on tax computation |
+| No figure shown originates in the model | Published studies show language models err on tax computation (US and other non-Indian law) |
 | Enforce it at five points, not one | Each point catches a class of error the others cannot (section 5) |
 | Separate agents by permitted tools | An instruction can be ignored; an absent capability cannot |
 | Tools live in the kernel | Objective 5 places tools under kernel management |
@@ -883,7 +916,7 @@ Each decision, with the reason or evidence behind it.
 | 12-second model timeout, 800 ms embedding budget | Slow calls are abandoned; deterministic paths answer correctly and at once |
 | Tools that ask for input | Guessing a Form 16 would be worse than asking |
 | Form figures accepted only from the person's form | Otherwise the model could supply them |
-| Backwards solving by bisection | The 87A rebate is a step that algebra steps over |
+| Backwards solving by bisection | The old regime's 87A rebate is a step that algebra steps over |
 | Services report, never act | The chat stays the only route into the arithmetic |
 | Services poll from the browser | A server-side background job could not be reproduced by re-running a command |
 | Payments application separate, platform read-only | The shape of India's Account Aggregator framework, and it makes the monitor demonstrable |
@@ -892,6 +925,12 @@ Each decision, with the reason or evidence behind it.
 | Rupees as integers | A decimal type reintroduces imprecision that rounding removed |
 | Rulebook typed by hand, not parsed | A parser adds a failure mode to the one file that must be exact |
 | Model identifiers from configuration | Providers retire models on their own schedule |
+| Evaluate against the same model without tools | Isolates the architecture's effect from the model's |
+| Give the baseline the whole rulebook as well | Removes the objection that the model simply did not know FY 2025-26 rules |
+| Answer key worked independently of the platform | Otherwise the platform is checked against itself; this is how the 44AD and 194J errors were found |
+| Mark the baseline on a final ANSWER line only | Stops a passing mention of the right figure from counting as an answer |
+| 60 s per model call in the evaluation | The model often exceeded the 12 s production limit; both sides got the same allowance |
+| One venue for the paper | The same paper cannot go to two venues with proceedings |
 
 ---
 
@@ -899,8 +938,9 @@ Each decision, with the reason or evidence behind it.
 
 | | |
 |---|---|
-| Prepared | 22 September 2026 |
-| Source | The repository archive supplied on 22 September 2026, audited and tested before writing |
-| Test result | 314 of 314 passing after `fix-audit.sh`; production build clean |
+| Prepared | 22 September 2026; updated 28 September 2026 |
+| Source | The repository at commit 44647ca and after, with `fix-audit.sh` and `fix-rules.sh` applied |
+| Test result | 318 of 318 passing |
+| Evaluation | Complete; results in `eval/results/`, summarised in section 15.3 |
 | Diagrams | Drawn for this document from the current code |
-| Still to do before a paper is submitted | Apply and push the audit fixes; verify every reference in section 18; decide which limitations in section 16.2 to address or declare |
+| Still to do | Write the BAICONF paper (due 31 October 2026) and its Excel data set; bring the rulebook's per-section notes in line with its header |

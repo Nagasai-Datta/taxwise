@@ -8,7 +8,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { markPlatform, markBaseline, figureKey, type Question } from "./score";
+import { markPlatform, markBaseline, figureKey, strayFigures, type Question } from "./score";
 
 const ROOT = path.resolve(__dirname);
 const RESULTS = path.join(ROOT, "results");
@@ -41,7 +41,7 @@ const perQuestion = new Map<string, Record<string, string>>();
 
 md.push("# Evaluation summary", "", `Generated ${new Date().toISOString()}`, "");
 md.push("## By condition", "");
-md.push("| Condition | Answers | Correct | Questions right in every run | Same figures in every run | Median latency (ms) |");
+md.push("| Condition | Answers | Correct | Questions right in every run | Same answer in every run | Median latency (ms) |");
 md.push("|---|---|---|---|---|---|");
 
 const notes: string[] = [];
@@ -59,7 +59,7 @@ for (const condition of CONDITIONS) {
     if (m.correct) correct++;
     const e = byQ.get(r.id) ?? { marks: [], keys: [] };
     e.marks.push(m.correct);
-    e.keys.push(r.error ? "(error)" : figureKey(q, r.text, condition));
+    e.keys.push(r.error ? "(error)" : figureKey(q, r.text, condition, r.tools ?? []));
     byQ.set(r.id, e);
     csv.push([
       condition, r.id, r.run, q.expected ?? q.kind, m.correct ? 1 : 0, JSON.stringify(m.readAs),
@@ -83,14 +83,20 @@ for (const condition of CONDITIONS) {
   const errors = rows.filter((r) => r.error).length;
   if (errors) notes.push(`- ${condition}: ${errors} answer(s) ended in an error or timeout, counted as wrong.`);
   if (isBase) {
-    const noLine = rows.filter((r) => !r.error && markBaseline(BY_ID.get(r.id)!, r.text).noFinalLine).length;
-    if (noLine) notes.push(`- ${condition}: ${noLine} answer(s) had no final ANSWER line, counted as wrong.`);
+    const finished = rows.filter((r) => !r.error && !markBaseline(BY_ID.get(r.id)!, r.text).noFinalLine);
+    const empty = rows.filter((r) => !r.error && !r.text.trim()).length;
+    const noLine = rows.length - finished.length - rows.filter((r) => r.error).length;
+    const rightFinished = finished.filter((r) => markBaseline(BY_ID.get(r.id)!, r.text).correct).length;
+    if (noLine) notes.push(`- ${condition}: ${noLine} answer(s) had no final ANSWER line (${empty} empty, the rest cut off mid-working), counted as wrong.`);
+    notes.push(`- ${condition}: among the ${finished.length} answers that reached a final ANSWER line, ${rightFinished} were right.`);
   } else {
     const rejected = rows.filter((r) => r.guardOk === false).length;
     const fellBack = rows.filter((r) => r.degraded).length;
     const offRoute = rows.filter((r) => r.route && r.route.agent !== "computation").length;
     const modelRoute = rows.filter((r) => r.route?.usedModel).length;
+    const stray = rows.filter((r) => strayFigures(r.text, r.tools ?? []).length > 0).length;
     notes.push(`- ${condition}: guard rejected the model's wording in ${rejected} of ${rows.length}; deterministic wording used in ${fellBack}; routed away from Computation in ${offRoute}; router consulted a model in ${modelRoute}.`);
+    notes.push(`- ${condition}: replies containing a figure above 100 that no tool produced: ${stray} of ${rows.length}.`);
   }
 }
 
@@ -108,7 +114,7 @@ for (const q of QUESTIONS) {
 md.push("", "## How answers were marked", "",
   "- Platform: the tool that answers the question must have produced the expected value, and the reply shown to the user must state it.",
   "- Baseline: only the final line 'ANSWER: <value>' is marked; a reply without one is wrong.",
-  "- Same figures in every run: the platform's set of figures, or the baseline's final answer, is identical across runs.",
+  "- Same answer in every run: for the platform, the tool output that answers the question; for the baseline, its final ANSWER line. Identical across all three runs.",
   "- Every answer is in answers.csv. Check the wrong ones by hand before quoting any number.", "");
 
 fs.writeFileSync(path.join(RESULTS, "summary.md"), md.join("\n"));

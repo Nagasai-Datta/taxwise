@@ -1,6 +1,6 @@
 # PAPER_STATE
 
-Last updated: 28 September 2026 (evaluation complete, documents organised), by Nagasai (with Claude)
+Last updated: 28 September 2026 (final documents: evaluation complete, references complete), by Nagasai (with Claude)
 
 ## Venue
 13th International Conference on Business Analytics and Intelligence (BAICONF 2026), Data Centre and Analytics Lab, IIM Bangalore, 17 to 19 December 2026. Abstract selected (submitted under Dr. Kalaavathi B, ID BAI2332). ICADCML 2027 (Springer) was dropped: the same paper cannot go to two venues.
@@ -57,10 +57,9 @@ Last updated: 28 September 2026 (evaluation complete, documents organised), by N
 - Guide: approve correcting the NCFE sentence in the abstract; withdraw from other conferences if another accepts this paper.
 - Confirm paper/Abstract.pdf is the submitted text.
 - Whether a graphic designer qualifies as a specified profession for 44ADA (affects Rohan's fixture; the paper can state it as an assumption).
-- Optional: DOIs for refs 12, 24 and S4 ("Cite This" on the publisher page).
 
 ## Source table
-paper/Source_Table.docx. Old 29: 22 verified, 2 corrected, 3 dropped, 2 replaced; plus 4 stand-ins and 15 new. Claims to avoid: "first", "portals only compute", "tax knowledge is weakest", "material errors on Indian tax". Rules are FY 2025-26 under the 1961 Act; the Income Tax Act, 2025 took effect 1 April 2026.
+paper/Source_Table.docx. Old 29: 22 verified, 2 corrected, 3 dropped, 2 replaced; plus 4 stand-ins and 15 new. All DOIs that exist are recorded; nothing left to look up. Claims to avoid: "first", "portals only compute", "tax knowledge is weakest", "material errors on Indian tax". Rules are FY 2025-26 under the 1961 Act; the Income Tax Act, 2025 took effect 1 April 2026.
 
 ## Next step
 Nagasai shows everything to Dr. Kalaavathi B. On go-ahead, Claude writes the full BAICONF paper (.docx) and the Excel data set.

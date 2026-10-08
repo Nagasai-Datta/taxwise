@@ -1,6 +1,6 @@
 # PAPER_STATE
 
-Last updated: 8 October 2026 (full first draft written), by Nagasai (with Claude)
+Last updated: 8 October 2026 (full draft and Excel data set ready for the guide), by Nagasai (with Claude)
 
 ## Venue
 13th International Conference on Business Analytics and Intelligence (BAICONF 2026), Data Centre and Analytics Lab, IIM Bangalore, 17 to 19 December 2026. Abstract selected (submitted under Dr. Kalaavathi B, ID BAI2332). ICADCML 2027 (Springer) was dropped: the same paper cannot go to two venues.
@@ -29,14 +29,14 @@ Last updated: 8 October 2026 (full first draft written), by Nagasai (with Claude
 | IV Findings | drafted | Table II; error types; guard on real model output; stress test; what the checks miss |
 | V Conclusion and implications | drafted | Builders, educators, regulators; limitations; future work |
 | References | done | 26, IEEE style, all from Source_Table.docx. Added chain of thought (3), Ramjattan et al. (5), Guo et al. (S4) and the hallucination survey (N8); the other 17 usable sources are left out because no sentence needs them and references count toward the limit |
-| Data set (Excel) | not started | Questions, answer key, all 360 answers, guard test |
-| Word count | 4,440 | Everything included (title, author placeholders, abstract, tables, captions, references). Real affiliations may shift it slightly |
+| Data set (Excel) | done | BAICONF_2026_Data_Set.xlsx: Read Me, Summary (Table II and Section IV counts as formulas), By Question, Answers (all 360), Questions, Profiles, Guard Test (all 1,707). Every number reproduced from the raw results and matches the paper |
+| Word count | 4,445 | Everything included (title, author placeholders, abstract, tables, captions, references). Real affiliations may shift it slightly |
 
 ## Draft file
 `BAICONF_2026_Full_Paper_Draft.docx`. Built to the template's IEEE A4 specification (page, margins, two columns, style names, sizes, heading and reference numbering) because the project copy of Full-Paper-Template.docx is text only. **Next session: attach the original template .docx in the chat and move the content into that exact file.**
 
 ## Evaluation (final, 28 September)
-30 questions (10 per profile), four conditions, three runs each, seed data, 60 s per model call. Answer key worked by hand, checked by Nagasai (18 against the official calculator, 12 by hand), cross-checked with a second LLM.
+30 questions (10 per profile), four conditions, three runs each, seed data, 60 s per model call. Answer key worked by hand, checked by Nagasai by hand against each question's working and the rules, cross-checked with a second LLM (questions.json, checkedHow). Not checked on the official calculator. Runs took place between 24 and 28 September 2026, not on one day as the master plan says.
 
 | Condition | Right, of 90 | Right in all 3 runs | Same answer in all 3 runs | Figures no tool produced |
 |---|---|---|---|---|
@@ -61,10 +61,13 @@ Last updated: 8 October 2026 (full first draft written), by Nagasai (with Claude
 - The template's own "Abstract—" and "Keywords—" labels keep its dash; there are no dashes in the prose.
 - One-line acknowledgement of AI assistance in writing.
 
+## How to send the data set
+- BAICONF's page says only that the full paper goes through the upload link (login with the BAI2332 account) and that the data set is preferred in Excel. The guide should check whether the upload form has a second file slot; if not, email baiconf2026@iimb.ac.in to ask. Do not zip the two files without asking.
+
 ## Open questions for the team
 - Guide: approve the four highlighted abstract changes (two go beyond the NCFE fix because the original wording conflicts with master plan section 17).
 - Guide: fill affiliations, emails and designation in the author block.
 - Rulebook per-section notes still say NOT YET VERIFIED; fix before submission.
 
 ## Next step
-Attach the original Full-Paper-Template.docx; Claude moves the draft into it. Then the Excel data set. Guide reviews the draft (target 20 October).
+Guide reviews the draft and the data set together (target 20 October). Attach the original Full-Paper-Template.docx so Claude can move the draft into that exact file.

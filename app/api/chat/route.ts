@@ -42,7 +42,9 @@ export async function POST(req: Request) {
       : String(body.message ?? "").slice(0, 2000).trim();
     let conversationId: string | null = body.conversationId ? String(body.conversationId) : null;
 
-    if (!message) return NextResponse.json({ error: "Empty message" }, { status: 400 });
+    // A form coming back carries values, not a typed message, so it is exempt.
+    // Checked first, this rejected every Form 16 and invoice submission.
+    if (!message && !body.resumeTool) return NextResponse.json({ error: "Empty message" }, { status: 400 });
 
     /**
      * A form coming back.

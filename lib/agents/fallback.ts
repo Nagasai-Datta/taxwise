@@ -33,6 +33,9 @@ export function pickToolsDeterministically(agent: AgentId, message: string): str
     if (/hra|rent allowance/.test(m)) return pick("compute_hra_exemption");
     if (/save|saving|reduce|optimi|deduction|80c/.test(m)) return pick("optimize_deductions");
     if (/what if|if i invest|suppose/.test(m)) return pick("optimize_deductions");
+    // "When do I need to file?" now routes here, and without this it fell
+    // through to a full tax computation instead of the deadlines.
+    if (/deadline|due date|\bwhen\b.*\b(file|due|pay)\b/.test(m)) return pick("get_deadlines");
     return pick("compute_tax");
   }
 

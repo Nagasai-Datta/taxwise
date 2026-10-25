@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { CAPABILITIES, capabilitiesFor, groupedFor, guidedStartFor } from "@/lib/kernel/capabilities";
 import { TOOL_NAMES } from "@/lib/kernel/tools/registry";
 import { seemsLost } from "@/lib/orchestrator/route";
+import { pickToolsDeterministically } from "@/lib/agents/fallback";
 import { describeApproach, explainQueryFor } from "@/lib/agents/approach";
 import { resolveFollowUps, extractFollowUps } from "@/lib/agents/followups";
 
@@ -176,4 +177,11 @@ describe("the pane differs by user, and overlaps where the tax code overlaps", (
     expect(capabilitiesFor("business")).toHaveLength(19);
     expect(capabilitiesFor("profession")).toHaveLength(20);
   });
+});
+
+describe("tool choice without a model", () => {
+  it('answers "When do I need to file?" with the deadlines', () =>
+    expect(pickToolsDeterministically("computation", "When do I need to file?")).toEqual(["get_deadlines"]));
+  it('still answers "When is my advance tax due?" with the advance tax schedule', () =>
+    expect(pickToolsDeterministically("computation", "When is my advance tax due?")).toEqual(["compute_advance_tax"]));
 });

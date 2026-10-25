@@ -128,7 +128,7 @@ export function monitorObservations(args: {
         service: "monitor",
         severity: "info",
         title: `${fresh.length} new transaction${fresh.length === 1 ? "" : "s"}`,
-        detail: `${inr(spent)} out and ${inr(received)} in since the last check.`,
+        detail: `${inr(spent)} out and ${inr(received)} in since you last looked.`,
         ask: "Show my recent transactions",
         order: 0,
       });

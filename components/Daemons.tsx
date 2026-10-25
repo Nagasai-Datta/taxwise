@@ -36,15 +36,21 @@ export default function Daemons({
   const [services, setServices] = useState<Service[]>([]);
   const [ranAt, setRanAt] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const lastPoll = useRef<string | null>(null);
+  const baseline = useRef<string | null>(null);
 
   const seconds = Number(process.env.NEXT_PUBLIC_DAEMON_POLL_SECONDS ?? DEFAULT_SECONDS);
 
   /**
-   * The time of the last check is kept for the browser session, per profile.
-   * Held only in memory, it was forgotten whenever the profile page closed,
-   * so going to PayLite to make a payment and coming back meant the payment
-   * was never reported as new.
+   * What counts as new.
+   *
+   * New means new since you last looked: since the last check before this
+   * visit to the page, or since the page opened if there was none. That
+   * baseline is fixed for the whole visit, so a payment made in PayLite is
+   * reported on return and stays reported when Check now is pressed. Two
+   * earlier versions lost it: one forgot the last check whenever the page
+   * closed, the next compared each poll with the one before it, so the notice
+   * vanished on the very next check. The time of each check is kept for the
+   * browser session, per profile, to become the next visit's baseline.
    */
   const key = `taxwise.lastPoll.${profileId}`;
 
@@ -52,25 +58,24 @@ export default function Daemons({
     setBusy(true);
     try {
       const q = new URLSearchParams({ profileId });
-      let since = lastPoll.current;
-      if (!since) { try { since = sessionStorage.getItem(key); } catch { since = null; } }
-      if (since) q.set("since", since);
+      if (baseline.current) q.set("since", baseline.current);
       const res = await fetch(`/api/daemons?${q.toString()}`);
       const j = await res.json();
       setObservations(j.observations ?? []);
       setServices(j.services ?? []);
       setRanAt(j.ranAt ?? null);
-      lastPoll.current = j.ranAt ?? new Date().toISOString();
-      try { sessionStorage.setItem(key, lastPoll.current); } catch { /* private window: memory only */ }
+      const at = j.ranAt ?? new Date().toISOString();
+      if (!baseline.current) baseline.current = at;
+      try { sessionStorage.setItem(key, at); } catch { /* private window: this visit only */ }
     } catch { /* leave the last report up */ } finally { setBusy(false); }
   }, [profileId, key]);
 
   useEffect(() => {
-    lastPoll.current = null;
+    try { baseline.current = sessionStorage.getItem(key); } catch { baseline.current = null; }
     poll();
     const t = setInterval(poll, Math.max(5, seconds) * 1000);
     return () => clearInterval(t);
-  }, [poll, seconds]);
+  }, [poll, seconds, key]);
 
   const grouped = services.map((s) => ({
     ...s, items: observations.filter((o) => o.service === s.id),

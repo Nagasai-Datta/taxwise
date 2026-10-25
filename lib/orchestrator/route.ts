@@ -87,8 +87,15 @@ export async function route(message: string): Promise<RouteDecision> {
 const LOST = [
   /^\s*(help|hi|hello|hey|start|begin)\s*[!.?]*\s*$/i,
   /\b(what (can|should) (i|you) (ask|do)|where (do|should) i (start|begin))\b/i,
-  /\b(i (don'?t|do not) (know|understand)|no idea|i'?m lost|confused|guide me|help me)\b/i,
+  /\b(i (don'?t|do not) (know|understand)|no idea|i'?m lost|confused)\b/i,
   /\b(what (else )?can (this|you|it) do|what (are|is) (my|the) options|show me everything)\b/i,
+  /**
+   * "Help me" and "guide me" count only when nothing follows them. Matched
+   * anywhere, they caught "help me prepare my tax return" and "help me raise an
+   * invoice", two of the suggested questions on the functionality pane, and
+   * answered both with the list of options instead of the form.
+   */
+  /^\s*(please\s+)?(help|guide) me( out| please| get started| start)?\s*[!.?]*\s*$/i,
 ];
 
 export function seemsLost(message: string): boolean {
@@ -106,7 +113,7 @@ const MANAGEMENT = /\b(spend|spending|spent|expense|expenses|budget|goals?|net w
  * an invoice" and "compare ELSS and PPF" both went to the Tutor, which has no
  * tool for either and could only talk around them.
  */
-const COMPUTATION = /\b(tax|gst|regimes?|deductions?|80c|80d|80ccd|24b|80tta|hra|194j|advance tax|presumptive|44ad|44ada|owe|liability|cess|rebate|slab|form 16|itr|invoices?|bill my client|elss|ppf|epf|nps|nsc|invest|investing|investments?)\b/;
+const COMPUTATION = /\b(tax|gst|regimes?|deductions?|80c|80d|80ccd|24b|80tta|hra|194j|tds|advance tax|presumptive|44ad|44ada|owe|liability|cess|rebate|slab|form 16|itr|returns?|file|invoices?|bill my client|elss|ppf|epf|nps|nsc|invest|investing|investments?|moves what|what affects|sliders?)\b/;
 const CONCEPTUAL = /\b(explain|meaning|means|what does|what is a|difference between|why do|why does|how does .* work)\b/;
 const PERSONAL = /\b(my|mine|i|me)\b/;
 const HOW_MUCH = /\bhow (much|many)\b/;

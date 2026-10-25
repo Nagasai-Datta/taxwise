@@ -56,9 +56,18 @@ describe("recognising someone who does not know where to start", () => {
   }
 
   const notLost = ["which regime is better for me?", "how much tax do I owe?",
-                   "what is section 80C?", "how much did I spend?", "should I use presumptive taxation?"];
+                   "what is section 80C?", "how much did I spend?", "should I use presumptive taxation?",
+                   "help me prepare my return", "help me prepare my tax return", "help me raise an invoice",
+                   "guide me through my Form 16"];
   for (const m of notLost) {
     it(`treats "${m}" as a real question`, () => expect(seemsLost(m)).toBe(false));
+  }
+});
+
+describe("the suggested questions", () => {
+  for (const c of CAPABILITIES) {
+    it(`"${c.ask}" is answered, not mistaken for a request for a starting point`, () =>
+      expect(seemsLost(c.ask)).toBe(false));
   }
 });
 

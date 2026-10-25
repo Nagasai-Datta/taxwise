@@ -1,5 +1,4 @@
 import { computeTax } from "./tax";
-import { compareRegimes } from "./regimes";
 import { RULES } from "./rules";
 import { inr, rupees } from "./money";
 import type { TraceNode, Deductions } from "./types";
@@ -148,7 +147,7 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
   steps.push({
     n: 3, title: "Apply the section 16 deductions", ok: true, value: professionalTax,
     detail: professionalTax > 0
-      ? `Professional tax of ${inr(professionalTax)} under section 16(iii). The standard deduction is applied by the engine, at the amount the chosen regime allows.`
+      ? `Professional tax of ${inr(professionalTax)} under section 16(iii), deductible under the old regime only. The standard deduction is applied by the engine, at the amount the chosen regime allows.`
       : "No professional tax was deducted. The standard deduction is applied by the engine.",
   });
 
@@ -176,28 +175,40 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
     f.deduction80C + f.deduction80D + f.deduction80CCD1B + f.deduction80TTA
   );
 
-  // The engine is given gross salary with section 10 exemptions and
-  // professional tax already removed, because those act before it.
-  const engineIncome = Math.max(0, rupees(
-    grossSalary - exemptAllowances - professionalTax + Math.max(0, otherIncome)
+  /**
+   * Each regime starts from its own income.
+   *
+   * Section 10 exemptions and professional tax act before the engine, but
+   * only under the old regime: the new regime allows neither. One shared
+   * starting figure once took the HRA exemption off the new regime's income
+   * as well, so Priya's new regime total income showed as ₹8,85,000 instead
+   * of ₹11,25,000. Her tax was still right only because the 87A rebate
+   * covered both figures.
+   */
+  const positiveOther = Math.max(0, otherIncome);
+  const incomeFor = (rg: "new" | "old") => Math.max(0, rupees(
+    rg === "old"
+      ? grossSalary - exemptAllowances - professionalTax + positiveOther
+      : grossSalary + positiveOther
   ));
 
   /* 6 --------------------------------------------- compute both regimes */
-  const comparison = compareRegimes({
-    grossIncome: engineIncome,
-    isSalaried: true,
-    deductions,
-  });
-  const regimeChosen = comparison.recommended;
-  const chosen = regimeChosen === "new" ? comparison.newRegime : comparison.oldRegime;
+  const newRegime = computeTax({ regime: "new", grossIncome: incomeFor("new"), isSalaried: true, deductions });
+  const oldRegime = computeTax({ regime: "old", grossIncome: incomeFor("old"), isSalaried: true, deductions });
+  const regimeChosen: "new" | "old" = newRegime.totalTax <= oldRegime.totalTax ? "new" : "old";
+  const chosen = regimeChosen === "new" ? newRegime : oldRegime;
+  const saving = Math.abs(newRegime.totalTax - oldRegime.totalTax);
+  const engineIncome = incomeFor(regimeChosen);
+  const exemptApplied = regimeChosen === "old" ? exemptAllowances : 0;
+  const professionalTaxApplied = regimeChosen === "old" ? professionalTax : 0;
 
   steps.push({
     n: 5, title: "Compute the tax under both regimes", ok: true,
-    detail: `New regime ${inr(comparison.newRegime.totalTax)}, old regime ${inr(comparison.oldRegime.totalTax)}.`,
+    detail: `New regime ${inr(newRegime.totalTax)}, old regime ${inr(oldRegime.totalTax)}.`,
   });
   steps.push({
     n: 6, title: "Choose the cheaper regime", ok: true, value: chosen.totalTax,
-    detail: `${chosen.regimeLabel} costs ${inr(chosen.totalTax)}, which is ${inr(comparison.saving)} less than the alternative.`,
+    detail: `${chosen.regimeLabel} costs ${inr(chosen.totalTax)}, which is ${inr(saving)} less than the alternative.`,
   });
   children.push(chosen.trace);
 
@@ -206,6 +217,9 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
   }
   if (regimeChosen === "new" && exemptAllowances > 0) {
     warnings.push("Exempt allowances are not available under the new regime, so they have not reduced your tax here.");
+  }
+  if (regimeChosen === "new" && professionalTax > 0) {
+    warnings.push("Professional tax is not deductible under the new regime, so it has not reduced your tax here.");
   }
 
   /* 7 ------------------------------------------------------- validate */
@@ -247,10 +261,10 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
     employer: { name: f.employerName || "(not entered)", tan: f.employerTAN || "(not entered)" },
     salaryIncome: {
       grossSalary,
-      exemptAllowancesSection10: exemptAllowances,
-      professionalTaxSection16iii: professionalTax,
+      exemptAllowancesSection10: exemptApplied,
+      professionalTaxSection16iii: professionalTaxApplied,
       standardDeduction: chosen.standardDeduction,
-      netSalary: Math.max(0, grossSalary - exemptAllowances - professionalTax - chosen.standardDeduction),
+      netSalary: Math.max(0, grossSalary - exemptApplied - professionalTaxApplied - chosen.standardDeduction),
     },
     otherIncome: {
       houseProperty: f.housePropertyIncome,
@@ -282,10 +296,11 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
   };
 
   return {
-    steps, regimeChosen, grossSalary, exemptAllowances,
+    steps, regimeChosen, grossSalary,
+    exemptAllowances: exemptApplied,
     standardDeduction: chosen.standardDeduction,
-    professionalTax,
-    salaryIncome: Math.max(0, grossSalary - exemptAllowances - professionalTax),
+    professionalTax: professionalTaxApplied,
+    salaryIncome: Math.max(0, grossSalary - exemptApplied - professionalTaxApplied),
     otherIncome,
     grossTotalIncome: engineIncome,
     chapterVIA: chosen.chapterVIA,
@@ -293,7 +308,7 @@ export function prepareITR(f: Form16, p: Profile): ITRResult {
     taxPayable: chosen.totalTax,
     tdsDeducted: f.tdsDeducted,
     refundDue,
-    savingVsOtherRegime: comparison.saving,
+    savingVsOtherRegime: saving,
     itr, warnings,
     trace: {
       ruleId: "itr.prepare",

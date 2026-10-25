@@ -64,6 +64,31 @@ describe("preparing a return", () => {
     if (r.regimeChosen === "new") expect(r.warnings.join(" ")).toMatch(/not available under the new regime/i);
   });
 
+  it("takes the HRA exemption off the old regime's income only", () => {
+    const r = prepareITR(form16({ hraExempt10_13A: 240000, tdsDeducted: 87880 }), priya);
+    expect(r.regimeChosen).toBe("new");
+    expect(r.totalIncome).toBe(1125000);       // 12,00,000 less the 75,000 standard deduction
+    expect(r.exemptAllowances).toBe(0);
+    expect(r.savingVsOtherRegime).toBe(87880); // the old regime, with HRA, is the 87,880 of P01
+    expect(r.refundDue).toBe(87880);
+  });
+
+  it("gives the new regime no deduction for professional tax", () => {
+    const withTax = prepareITR(form16({ salary17_1: 2500000, professionalTax16_3: 2500 }), priya);
+    const without = prepareITR(form16({ salary17_1: 2500000 }), priya);
+    expect(withTax.regimeChosen).toBe("new");
+    expect(withTax.taxPayable).toBe(without.taxPayable);
+    expect(withTax.warnings.join(" ")).toMatch(/professional tax is not deductible/i);
+  });
+
+  it("still applies exemptions and professional tax when the old regime is cheaper", () => {
+    const r = prepareITR(form16({ salary17_1: 1500000, hraExempt10_13A: 400000, professionalTax16_3: 2500,
+      deduction80C: 150000, deduction80D: 25000, deduction80CCD1B: 50000, housePropertyIncome: -200000 }), priya);
+    expect(r.regimeChosen).toBe("old");
+    expect(r.exemptAllowances).toBe(400000);
+    expect(r.professionalTax).toBe(2500);
+  });
+
   it("validates its own arithmetic in step seven", () => {
     const r = prepareITR(form16(), priya);
     expect(r.steps[6].title).toMatch(/check the arithmetic/i);

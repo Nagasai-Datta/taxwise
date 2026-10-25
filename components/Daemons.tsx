@@ -40,19 +40,30 @@ export default function Daemons({
 
   const seconds = Number(process.env.NEXT_PUBLIC_DAEMON_POLL_SECONDS ?? DEFAULT_SECONDS);
 
+  /**
+   * The time of the last check is kept for the browser session, per profile.
+   * Held only in memory, it was forgotten whenever the profile page closed,
+   * so going to PayLite to make a payment and coming back meant the payment
+   * was never reported as new.
+   */
+  const key = `taxwise.lastPoll.${profileId}`;
+
   const poll = useCallback(async () => {
     setBusy(true);
     try {
       const q = new URLSearchParams({ profileId });
-      if (lastPoll.current) q.set("since", lastPoll.current);
+      let since = lastPoll.current;
+      if (!since) { try { since = sessionStorage.getItem(key); } catch { since = null; } }
+      if (since) q.set("since", since);
       const res = await fetch(`/api/daemons?${q.toString()}`);
       const j = await res.json();
       setObservations(j.observations ?? []);
       setServices(j.services ?? []);
       setRanAt(j.ranAt ?? null);
       lastPoll.current = j.ranAt ?? new Date().toISOString();
+      try { sessionStorage.setItem(key, lastPoll.current); } catch { /* private window: memory only */ }
     } catch { /* leave the last report up */ } finally { setBusy(false); }
-  }, [profileId]);
+  }, [profileId, key]);
 
   useEffect(() => {
     lastPoll.current = null;
